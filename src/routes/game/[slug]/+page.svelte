@@ -1,28 +1,45 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import type { PageData } from './$types';
-	import { searchGameInfo } from '$lib/requests';
-
+	import { searchGameInfos, searchGamePlatforms } from '$lib/requests';
+	
 	export let data: PageData;
-	let game;
+	let game: null | any;
+	let platforms: null | any;
+	let found: boolean = true;
 
 	onMount(async () => {
-		try {
-			const results = await searchGameInfo(data.slug);
-			// Assuming results is an object with the expected structure
-			// Update the game variable with the result
-			game = results.results.bindings[0];
-		} catch (error) {
-			console.error('Error fetching game information:', error);
-			// Handle errors as needed
+		const results = await searchGameInfos(data.slug);
+		if (results.results.bindings.length == 0) {
+			found = false;
 		}
+		game = results.results.bindings[0];
 	});
+
+	onMount(async () => {
+		const results = await searchGamePlatforms(data.slug);
+		platforms = results.results.bindings;
+	});
+
 </script>
 
 <h1 class="text-2xl">{data.slug}</h1>
 
-{#if game}
-	<p>{game.description.value}</p>
+{#if found}
+	{#if game}
+		<p>{game.description.value}</p>
+	{:else}
+		<p>Loading...</p>
+	{/if}
+
+	{#if platforms}
+		<ul>
+			{#each platforms as platform}
+				<li>{platform.platform.value}</li>
+			{/each}
+		</ul>
+	{/if}
+
 {:else}
-	<p>Loading...</p>
+	<p>Not found</p>
 {/if}

@@ -51,19 +51,26 @@ export async function searchImage(originalUri: string): Promise<string> {
     return body.query.pages[pageId].imageinfo[0].url;
 }
 
-export async function searchGameInfo(game: string): Promise<any> {
-
-    let query = `
-    SELECT ?title ?image ?description MIN(?date) as ?firstdate WHERE {
-        BIND(<http://dbpedia.org/resource/${game}> AS ?game).
-        ?game rdfs:label ?title.
-        OPTIONAL {?game dbo:thumbnail ?image.}
-        OPTIONAL {?game dbo:releaseDate ?date.}
-        OPTIONAL {?game dbo:abstract ?description.
-        FILTER(lang(?description) = "en").}
-        FILTER(lang(?title) = "en").
+export async function searchGameInfos(game: string): Promise<any> {
+    return executeQuery(`
+        SELECT ?title ?image ?description MIN(?date) as ?firstdate WHERE {
+            BIND(<http://dbpedia.org/resource/${game}> AS ?game).
+            ?game rdfs:label ?title.
+            OPTIONAL {?game dbo:thumbnail ?image.}
+            OPTIONAL {?game dbo:releaseDate ?date.}
+            OPTIONAL {?game dbo:abstract ?description.
+            FILTER(lang(?description) = "en").}
+            FILTER(lang(?title) = "en").
         }
         LIMIT 1
-    `
-    return executeQuery(query);
+    `);
+}
+
+export async function searchGamePlatforms(game: string): Promise<any> {
+    return executeQuery(`
+        SELECT ?platform WHERE {
+            BIND(<http://dbpedia.org/resource/${game}> AS ?game).
+            ?game dbo:computingPlatform ?platform.
+        }
+    `);
 }
