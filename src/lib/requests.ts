@@ -74,3 +74,21 @@ export async function searchGamePlatforms(game: string): Promise<any> {
         }
     `);
 }
+
+export async function searchPublisherInfo(publisher: string): Promise<any> {
+
+    let query = `
+        SELECT ?publisherlabel ?description ?emp ?homepage ?image WHERE {
+        BIND(<http://dbpedia.org/resource/${publisher}> AS ?publisher).
+        ?publisher rdfs:label ?publisherlabel.
+        ?publisher ^dbo:publisher ?game.
+        FILTER(lang(?publisherlabel) = "en").
+        OPTIONAL {?publisher dbo:abstract ?description. FILTER(lang(?description) = "en")}.
+        OPTIONAL {?publisher dbo:numberOfEmployees ?emp.}
+        OPTIONAL {?publisher foaf:homepage ?homepage.}.
+        OPTIONAL {?publisher dbo:thumbnail ?image.}.
+        }
+        LIMIT 1
+    `
+    return executeQuery(query);
+}
