@@ -37,3 +37,16 @@ limit 100`;
 
     return executeQuery(query);
 }
+
+export async function searchImage(originalUri: string): Promise<string> {
+    let urlParts = originalUri.split("/");
+    let last = urlParts[urlParts.length - 1];
+    let filename = last.split("?")[0];
+    let apiRequestUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=File:${filename}&prop=imageinfo&iiprop=url&format=json&redirects`;
+
+    let response = await fetch(apiRequestUrl);
+    let body = await response.json();
+    let pageId = Object.keys(body.query.pages)[0];
+
+    return body.query.pages[pageId].imageinfo[0].url;
+}
