@@ -23,7 +23,7 @@ export class ValueContainsFilter implements Filter {
 export async function searchGames(filters: Filter[]): Promise<any> {
     let filter_lines = filters.map(filter => filter.getFilterLine()).join("");
 
-    let query = `SELECT DISTINCT ?gamelabel ?publisherlabel ?image WHERE {
+    let query = `SELECT DISTINCT ?game ?gamelabel ?publisherlabel ?image WHERE {
 ?game a dbo:VideoGame.
 ?game dbo:publisher ?publisher.
 ?game dbo:thumbnail ?image.
