@@ -50,3 +50,17 @@ export async function searchImage(originalUri: string): Promise<string> {
 
     return body.query.pages[pageId].imageinfo[0].url;
 }
+
+export async function searchGameInfo(game: string): Promise<any> {
+
+    let query = `
+        SELECT DISTINCT ?gamelabel ?image WHERE {
+        ${game} dbo:thumbnail ?image.
+        ${game} rdfs:label ?gamelabel.
+        FILTER(lang(?gamelabel) = "en").
+        }
+        limit 100
+    `;
+
+    return executeQuery(query);
+}
