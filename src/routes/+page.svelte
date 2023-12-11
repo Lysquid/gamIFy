@@ -1,14 +1,15 @@
-<script>
-    let data = {
-        result : [
-            {
-                title : "Super Mario",
-                publisher: "Nintendo",
-                image : "https://www.startpage.com/av/proxy-image?piurl=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.hURFJf6p7dZYlpAZScKGDAHaKI%26pid%3DApi&sp=1701857939T2f192bc62320b3bade779ffd47ece0d596f4e34846a5d6f8b6b9aadfee481c02",
-            },
+<script lang="ts">
+	import { ValueContainsFilter, searchGames } from "$lib/requests";
 
-        ],
-    };
+    let search = "";
+
+    let data: any | null = null;
+
+    async function searchQuery() {
+        console.log("oui");
+        data = await searchGames([new ValueContainsFilter("gamelabel", search)]);
+        console.log("non");
+    }
 </script>
 
 
@@ -37,8 +38,8 @@
             </ul>
         </div>
         <div class="relative w-full">
-            <input type="search" id="search-dropdown" class="block p-2.5 w-full z-20 text-sm text-gray-900 bg-gray-50 rounded-e-lg border-s-gray-50 border-s-2 border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-s-gray-700  dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:border-blue-500" placeholder="Search Mockups, Logos, Design Templates..." required>
-            <button type="submit" class="absolute top-0 end-0 p-2.5 text-sm font-medium h-full text-white bg-blue-700 rounded-e-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+            <input bind:value={search} type="search" id="search-dropdown" class="block p-2.5 w-full z-20 text-sm text-gray-900 bg-gray-50 rounded-e-lg border-s-gray-50 border-s-2 border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-s-gray-700  dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:border-blue-500" placeholder="Search Mockups, Logos, Design Templates..." required>
+            <button on:click={searchQuery} type="submit" class="absolute top-0 end-0 p-2.5 text-sm font-medium h-full text-white bg-blue-700 rounded-e-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                 <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
                 </svg>
@@ -48,15 +49,17 @@
     </div>
 </form>
 
-<div class="flex flex-col mx-50 gap-5 mt-10 items-center">
-    {#each data.result as item}
-    <div class="flex bg-white hover:bg-gray-50 shadow-lg dark:bg-gray-700 dark:hover:bg-gray-600 h-32 gap-5 rounded-xl overflow-hidden hover:scale-105 transition cursor-pointer">
-        <img class="w-32 object-cover" src="{item.image}" alt=""/>
-        <div class="my-auto w-96">
-            <h1 class="text-xl">{item.title}</h1>
-            <p class="dark:text-gray-400 text-gray-600">published by <strong>{item.publisher}</strong></p>
+{#if data != null}
+    <div class="flex flex-col mx-50 gap-5 mt-10 items-center">
+        {#each data.results.bindings as item}
+        <div class="flex bg-white hover:bg-gray-50 shadow-lg dark:bg-gray-700 dark:hover:bg-gray-600 h-32 gap-5 rounded-xl overflow-hidden hover:scale-105 transition cursor-pointer">
+            <img class="w-32 object-cover" src="{item.image.value}" alt=""/>
+            <div class="my-auto w-96">
+                <h1 class="text-xl">{item.gamelabel.value}</h1>
+                <p class="dark:text-gray-400 text-gray-600">published by <strong>{item.publisherlabel.value}</strong></p>
+            </div>
         </div>
+        {/each}
     </div>
-    {/each}
-</div>
+{/if}
 
