@@ -25,7 +25,7 @@ export async function searchGames(filters: Filter[]): Promise<any> {
 
     let query = `SELECT DISTINCT ?game ?gamelabel ?publisherlabel ?image WHERE {
 ?game a dbo:VideoGame.
-?game dbo:thumbnail ?image.
+OPTIONAL {?game dbo:thumbnail ?image.}
 OPTIONAL {?game dbo:publisher ?publisher.
 ?publisher rdfs:label ?publisherlabel.
 FILTER(lang(?publisherlabel) = "en").}
