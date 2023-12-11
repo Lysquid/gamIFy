@@ -10,9 +10,11 @@
         data = (await searchGames([new ValueContainsFilter("gamelabel", search)])).results.bindings;
 
         await Promise.allSettled(data.map(async (el: any)=>{
-            let img = await searchImage(el.image.value);
-            el.image.value = img;
-            data = data;
+            if (el.image) {
+                let img = await searchImage(el.image.value);
+                el.image.value = img;
+                data = data;
+            }
         }));
         console.log("non");
         console.log(data);
@@ -60,7 +62,11 @@
     <div class="flex flex-col mx-50 gap-5 mt-10 items-center">
         {#each data as item}
         <div on:cl class="flex bg-white hover:bg-gray-50 shadow-lg dark:bg-gray-700 dark:hover:bg-gray-600 h-32 gap-5 rounded-xl overflow-hidden hover:scale-105 transition cursor-pointer">
-            <img class="w-32 object-contain" src="{item.image.value}" alt=""/>
+            {#if item.image}
+                <img class="w-32 object-contain" src="{item.image.value}" alt=""/>
+            {:else}
+                <div class="w-32 object-contain"></div>
+            {/if}
             <div class="my-auto w-96">
                 <h1 class="text-xl">{item.gamelabel.value}</h1>
                 {#if item.publisherlabel}
