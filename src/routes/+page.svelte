@@ -60,7 +60,7 @@
     <div class="flex flex-col mx-50 gap-5 mt-10 items-center">
         {#each data as item}
         <div on:cl class="flex bg-white hover:bg-gray-50 shadow-lg dark:bg-gray-700 dark:hover:bg-gray-600 h-32 gap-5 rounded-xl overflow-hidden hover:scale-105 transition cursor-pointer">
-            <img class="w-32 object-cover" src="{item.image.value}" alt=""/>
+            <img class="w-32 object-contain" src="{item.image.value}" alt=""/>
             <div class="my-auto w-96">
                 <h1 class="text-xl">{item.gamelabel.value}</h1>
                 {#if item.publisherlabel}
