@@ -1,11 +1,10 @@
 <script lang="ts">
-	import { goto } from "$app/navigation";
 	import { ValueContainsFilter, searchGames, searchImage } from '$lib/requests';
-	import { Spinner } from 'flowbite-svelte';
+	import { Button, Dropdown, DropdownItem, Spinner } from 'flowbite-svelte';
 
 	let search = '';
 
-	let data: any | null = null;
+	let data: any[] | null = null;
 
     let loading = false;
 
@@ -13,15 +12,17 @@
         loading = true;
 		data = (await searchGames([new ValueContainsFilter('gamelabel', search)])).results.bindings;
 
-		await Promise.allSettled(
-			data.map(async (el: any) => {
-				if (el.image) {
-					let img = await searchImage(el.image.value);
-					el.image.value = img;
-					data = data;
-				}
-			})
-		);
+        if (data) {
+            await Promise.allSettled(
+                data.map(async (el: any) => {
+                    if (el.image) {
+                        let img = await searchImage(el.image.value);
+                        el.image.value = img;
+                        data = data;
+                    }
+                })
+            );
+        }
         loading = false;
 	}
 </script>
@@ -31,7 +32,7 @@
 </p>
 <form>
 	<div class="flex max-w-3xl m-auto">
-		<label
+		<!-- <label
 			for="search-dropdown"
 			class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Your Email</label
 		>
@@ -92,7 +93,16 @@
 					>
 				</li>
 			</ul>
-		</div>
+		</div> -->
+        
+        <Button>Dropdown</Button>
+        <Dropdown class="bg-blue-500">
+            <DropdownItem>Dashboard</DropdownItem>
+            <DropdownItem>Settings</DropdownItem>
+            <DropdownItem>Earnings</DropdownItem>
+            <DropdownItem>Sign out</DropdownItem>
+        </Dropdown>
+
 		<div class="relative w-full">
 			<input
 				bind:value={search}
@@ -151,5 +161,5 @@
         {/each}
     </div>
 {:else if data}
-    <p>No results</p>
+    <p class="text-center m-20 text-lg dark:text-gray-400 text-gray-600">No results</p>
 {/if}
