@@ -55,8 +55,8 @@ export async function searchGameInfo(game: string): Promise<any> {
 
     let query = `
     SELECT DISTINCT ?gamelabel WHERE {
+        BIND(<http://dbpedia.org/resource/${game}> AS ?game).
         ?game rdfs:label ?gamelabel.
-        FILTER(?game = <http://dbpedia.org/resource/${game}>).
         FILTER(lang(?gamelabel) = "en").
     }
     LIMIT 1
