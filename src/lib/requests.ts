@@ -1,16 +1,16 @@
 import { executeQuery } from "$lib";
 
-type GameSearchFilterAttribute = "gamelabel" | "publisherlabel";
+type FilterAttribute = "gamelabel" | "publisherlabel";
 
-interface Filter<_> {
+interface Filter {
     getFilterLine(): string;
 }
 
-export class ValueContainsFilter<T> implements Filter<T> {
-    attribute: T;
+export class ValueContainsFilter implements Filter {
+    attribute: FilterAttribute;
     value: string;
 
-    constructor(type: T, value: string) {
+    constructor(type: FilterAttribute, value: string) {
         this.attribute = type;
         this.value = value;
     }
@@ -20,7 +20,7 @@ export class ValueContainsFilter<T> implements Filter<T> {
     }
 }
 
-export async function searchGames(filters: Filter<GameSearchFilterAttribute>[]): Promise<any> {
+export async function searchGames(filters: Filter[]): Promise<any> {
     let filter_lines = filters.map(filter => filter.getFilterLine()).join("");
 
     let query = `SELECT DISTINCT ?gamelabel ?publisherlabel ?image WHERE {
