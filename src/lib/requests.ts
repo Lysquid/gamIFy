@@ -25,12 +25,12 @@ export async function searchGames(filters: Filter[]): Promise<any> {
 
     let query = `SELECT DISTINCT ?game ?gamelabel ?publisherlabel ?image WHERE {
 ?game a dbo:VideoGame.
-?game dbo:publisher ?publisher.
 ?game dbo:thumbnail ?image.
+OPTIONAL {?game dbo:publisher ?publisher.
 ?publisher rdfs:label ?publisherlabel.
+FILTER(lang(?publisherlabel) = "en").}
 ?game rdfs:label ?gamelabel.
 FILTER(lang(?gamelabel) = "en").
-FILTER(lang(?publisherlabel) = "en").
 ${filter_lines}
 }
 limit 100`;
