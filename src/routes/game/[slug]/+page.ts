@@ -8,7 +8,7 @@ export const load: PageLoad = async ({ params }) => {
     const results = await searchGameInfo(params.slug);
     if (results.results.bindings.length > 0) {
 		return {
-			games: results.results.bindings
+			game: results.results.bindings[0]
 		};
 	}
 

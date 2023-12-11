@@ -54,12 +54,16 @@ export async function searchImage(originalUri: string): Promise<string> {
 export async function searchGameInfo(game: string): Promise<any> {
 
     let query = `
-    SELECT DISTINCT ?gamelabel WHERE {
+    SELECT ?title ?image ?description MIN(?date) as ?firstdate WHERE {
         BIND(<http://dbpedia.org/resource/${game}> AS ?game).
-        ?game rdfs:label ?gamelabel.
-        FILTER(lang(?gamelabel) = "en").
-    }
-    LIMIT 1
+        ?game rdfs:label ?title.
+        OPTIONAL {?game dbo:thumbnail ?image.}
+        OPTIONAL {?game dbo:releaseDate ?date.}
+        OPTIONAL {?game dbo:abstract ?description.
+        FILTER(lang(?description) = "en").}
+        FILTER(lang(?title) = "en").
+        }
+        LIMIT 1
     `
     return executeQuery(query);
 }
