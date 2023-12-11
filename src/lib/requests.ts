@@ -55,10 +55,11 @@ export async function searchGameInfo(game: string): Promise<any> {
 
     let query = `
     SELECT DISTINCT ?gamelabel WHERE {
-        <http://dbpedia.org/resource/${game}> rdfs:label ?gamelabel.
+        ?game rdfs:label ?gamelabel.
+        FILTER(?game = <http://dbpedia.org/resource/${game}>).
         FILTER(lang(?gamelabel) = "en").
-      }
-      LIMIT 1
+    }
+    LIMIT 1
     `
     return executeQuery(query);
 }
