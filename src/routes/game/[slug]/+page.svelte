@@ -4,6 +4,6 @@
 	export let data: PageData;
 </script>
 
-{#each data.results.bindings as game}
+{#each data.games as game}
     {game.gamelabel.value}
 {/each}
