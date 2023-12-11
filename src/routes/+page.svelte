@@ -63,7 +63,9 @@
             <img class="w-32 object-cover" src="{item.image.value}" alt=""/>
             <div class="my-auto w-96">
                 <h1 class="text-xl">{item.gamelabel.value}</h1>
-                <p class="dark:text-gray-400 text-gray-600">published by <strong>{item.publisherlabel.value}</strong></p>
+                {#if item.publisherlabel}
+                    <p class="dark:text-gray-400 text-gray-600">published by <strong>{item.publisherlabel.value}</strong></p>
+                {/if}
             </div>
         </div>
         {/each}
