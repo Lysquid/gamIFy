@@ -55,11 +55,11 @@ export async function searchGameInfo(game: string): Promise<any> {
 
     let query = `
         SELECT DISTINCT ?gamelabel ?image WHERE {
-        ${game} dbo:thumbnail ?image.
-        ${game} rdfs:label ?gamelabel.
-        FILTER(lang(?gamelabel) = "en").
+            dbr:${game} dbo:thumbnail ?image.
+            dbr:${game} rdfs:label ?gamelabel.
+            FILTER(lang(?gamelabel) = "en").
         }
-        limit 100
+        LIMIT 1
     `;
 
     return executeQuery(query);

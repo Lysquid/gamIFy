@@ -4,6 +4,6 @@ import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ params }) => {
 
-    return await searchGameInfo("dbr:Minecraft");
+    return await searchGameInfo(params.slug);
 
 };
