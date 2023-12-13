@@ -5,6 +5,7 @@
 	import InfoPage from '$lib/components/InfoPage.svelte';
 	import { Spinner } from 'flowbite-svelte';
 	import InfoPageTableEntry from '$lib/components/InfoPageTableEntry.svelte';
+	import SmallListBox from '$lib/components/SmallListBox.svelte';
 	
 	export let data: PageData;
 	let game: null | any;
@@ -68,38 +69,30 @@
 		<div slot="content">
 			{#if platforms}
 				<h1 class="text-3xl mt-10">Platforms</h1>
-				<ul>
-					{#each platforms as platform}
-						<li>{platform.label.value}</li>
-					{/each}
-				</ul>
+				{#each platforms as platform}
+					<SmallListBox name={platform.label.value} type="platform" uri={platform.uri.value} image={platform.image.value}/>
+				{/each}
 			{/if}
 		
 			{#if genres}
 				<h1 class="text-3xl mt-10">Genre</h1>
-				<ul>
-					{#each genres as genre}
-						<li>{genre.label.value}</li>
-					{/each}
-				</ul>
+				{#each genres as genre}
+					<SmallListBox name={genre.label.value} type="genre" uri={genre.uri.value}/>
+				{/each}
 			{/if}
 		
 			{#if publishers}
 				<h1 class="text-3xl mt-10">Publishers</h1>
-				<ul>
-					{#each publishers as publisher}
-						<li>{publisher.label.value}</li>
-					{/each}
-				</ul>
+				{#each publishers as publisher}
+					<SmallListBox name={publisher.label.value} type="publisher" uri={publisher.uri.value} image={publisher.image.value}/>
+				{/each}
 			{/if}
 
 			{#if developers}
 			<h1 class="text-3xl mt-10">Developers</h1>
-			<ul>
-				{#each developers as developers}
-					<li>{developers.label.value}</li>
+				{#each developers as developer}
+					<SmallListBox name={developer.label.value} type="publisher" uri={developer.uri.value} image={developer.image.value}/>
 				{/each}
-			</ul>
 		{/if}
 		</div>
 	</InfoPage>

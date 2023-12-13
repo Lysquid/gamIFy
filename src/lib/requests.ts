@@ -97,7 +97,7 @@ export async function searchGameDetail(detail: string, game: string): Promise<an
             ?game dbo:${detail} ?uri.
             ?uri rdfs:label ?label.
             FILTER(lang(?label) = "en").
-            OPTIONAL {?game dbo:thumbnail ?image.}
+            OPTIONAL {?uri dbo:thumbnail ?image.}
         }
     `);
 }
