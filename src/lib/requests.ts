@@ -91,10 +91,11 @@ export async function searchGameGenres(game: string): Promise<any> {
 export async function searchPublisherInfo(publisher: string): Promise<any> {
 
     let query = `
-        SELECT ?publisherlabel ?description ?emp ?homepage ?image ?citylabel GROUP_CONCAT(DISTINCT ?people; SEPARATOR=" | ") as ?keyPeople WHERE {
+        SELECT ?publisherlabel ?description ?emp ?homepage ?image ?citylabel
+        GROUP_CONCAT(DISTINCT ?people; SEPARATOR=" | ") as ?keyPeople 
+        WHERE {
         BIND(<http://dbpedia.org/resource/${publisher}> AS ?publisher).
         ?publisher rdfs:label ?publisherlabel.
-        ?publisher ^dbo:publisher ?game.
         FILTER(lang(?publisherlabel) = "en").
         OPTIONAL {?publisher dbo:abstract ?description. FILTER(lang(?description) = "en")}.
         OPTIONAL {?publisher dbo:numberOfEmployees ?emp.}.
@@ -102,6 +103,7 @@ export async function searchPublisherInfo(publisher: string): Promise<any> {
         OPTIONAL {?publisher dbo:thumbnail ?image.}.
         OPTIONAL {?publisher dbo:locationCity ?city. ?city rdfs:label ?citylabel. FILTER(lang(?citylabel) = "en").}.
         ?publisher dbp:keyPeople ?people.
+        ?game dbo:publisher ?publisher.
         }
         GROUP BY ?publisherlabel ?description ?emp ?homepage ?image ?citylabel
         LIMIT 1
