@@ -30,9 +30,11 @@ OPTIONAL {?game dbo:publisher ?publisher.
 ?publisher rdfs:label ?publisherlabel.
 FILTER(lang(?publisherlabel) = "en").}
 ?game rdfs:label ?gamelabel.
+?game dbo:wikiPageLength ?wikipagelength.
 FILTER(lang(?gamelabel) = "en").
 ${filter_lines}
 }
+ORDER BY DESC(?wikipagelength)
 limit 100`;
 
     return executeQuery(query);
