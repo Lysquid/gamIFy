@@ -1,24 +1,19 @@
 <script lang="ts">
 	import ListBox, { type ListBoxDataType } from '$lib/components/ListBox.svelte';
+	import SearchBar from '$lib/components/SearchBar.svelte'
 	import { ValueContainsFilter, searchGameSuggestions, searchGames, searchImage, searchPublisherSuggestions, searchPublishers } from '$lib/requests';
-	import { Spinner } from 'flowbite-svelte';
 	import type { Snapshot } from './$types';
 
 	let search = '';
-
-	let suggestions: string[] = [];
 
 	let data: ListBoxDataType[] | null = null;
 
 	let error: boolean = false;
 
-    let loading = false;
-
     let type: string;
 
-	async function searchQuery() {
+	async function searchQuery(search: string): Promise<void> {
 		error = false;
-        loading = true;
         data = null;
         if (type==="games") {
 		    const res = (await searchGames([new ValueContainsFilter('gamelabel', search)]))?.results.bindings;
@@ -44,20 +39,18 @@
 	            }}));
 			}
         }
-
-
-        loading = false;
 	}
 
-	async function loadSuggestions() {
+	async function loadSuggestions(search: string): Promise<string[]> {
 		if(type==="games") {
 			const res = (await searchGameSuggestions([new ValueContainsFilter('gamelabel', search)]))?.results.bindings;
-			suggestions = res.map((el: any) => el.gamelabel.value);
+			return res.map((el: any) => el.gamelabel.value);
 		
 		} else if (type==="publishers") {
 			const res = (await searchPublisherSuggestions([new ValueContainsFilter('publisherlabel', search)]))?.results.bindings;
-			suggestions = res.map((el: any) => el.publisherlabel.value);
+			return res.map((el: any) => el.publisherlabel.value);
 		}
+		return [];
 	}
 
 	export const snapshot: Snapshot<any[]> = {
@@ -75,49 +68,8 @@
 			<option value="games">Games</option>
 			<option value="publishers">Publishers</option>
 		</select>
-
-		<div class="relative w-full">
-			<input
-				bind:value={search}
-				on:input={loadSuggestions}
-				type="search"
-				class="block p-2.5 w-full z-20 text-sm text-gray-900 bg-gray-50 rounded-e-lg border-s-gray-50 border-s-2 border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-s-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:border-blue-500"
-				placeholder="Search {type || ''}"
-				list="search-results"
-				required
-			/>
-			<datalist id="search-results">
-				{#each suggestions as suggestion}
-                	<option value="{suggestion}"></option>
-                {/each}
-			</datalist>
-			<button
-				on:click={searchQuery}
-				type="submit"
-				class="absolute top-0 end-0 p-2.5 text-sm font-medium h-full text-white bg-blue-700 border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-			>
-                {#if loading}
-                    <Spinner color="white" size="5"></Spinner>
-                {:else}
-                    <svg
-                        class="w-4 h-4"
-                        aria-hidden="true"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 20 20"
-                    >
-                        <path
-                            stroke="currentColor"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-                        />
-                    </svg>
-                {/if}
-				<span class="sr-only">Search</span>
-			</button>
-		</div>
+		
+		<SearchBar getSuggestions={loadSuggestions} onSearch={searchQuery} placeholder="search for {type}" search={search}></SearchBar>
 	</div>
 </form>
 
