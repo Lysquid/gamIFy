@@ -10,6 +10,7 @@
 	let game: null | any;
 	let platforms: null | any;
 	let publishers: null | any;
+	let developers: null | any;
 	let genres: null | any;
 	let loading: boolean = true;
 
@@ -36,7 +37,7 @@
 	});
 
 	onMount(async () => {
-		publishers = (await searchGameDetail("developer", data.slug)).results.bindings;
+		developers = (await searchGameDetail("developer", data.slug)).results.bindings;
 	});
 
 </script>
@@ -91,6 +92,15 @@
 					{/each}
 				</ul>
 			{/if}
+
+			{#if developers}
+			<h1 class="text-3xl mt-10">Developers</h1>
+			<ul>
+				{#each developers as developers}
+					<li>{developers.label.value}</li>
+				{/each}
+			</ul>
+		{/if}
 		</div>
 	</InfoPage>
 {:else}
