@@ -1,10 +1,12 @@
 <script lang="ts">
 	import ListBox, { type ListBoxDataType } from '$lib/components/ListBox.svelte';
-	import { ValueContainsFilter, searchGames, searchImage, searchPublishers } from '$lib/requests';
+	import { ValueContainsFilter, searchGameSuggestions, searchGames, searchImage, searchPublisherSuggestions, searchPublishers } from '$lib/requests';
 	import { Spinner } from 'flowbite-svelte';
 	import type { Snapshot } from './$types';
 
 	let search = '';
+
+	let suggestions: string[] = [];
 
 	let data: ListBoxDataType[] | null = null;
 
@@ -47,6 +49,17 @@
         loading = false;
 	}
 
+	async function loadSuggestions() {
+		if(type==="games") {
+			const res = (await searchGameSuggestions([new ValueContainsFilter('gamelabel', search)]))?.results.bindings;
+			suggestions = res.map((el: any) => el.gamelabel.value);
+		
+		} else if (type==="publishers") {
+			const res = (await searchPublisherSuggestions([new ValueContainsFilter('publisherlabel', search)]))?.results.bindings;
+			suggestions = res.map((el: any) => el.publisherlabel.value);
+		}
+	}
+
 	export const snapshot: Snapshot<any[]> = {
 		capture: () => [data, search, type],
 		restore: (value) => {[data, search, type] = value},
@@ -66,16 +79,22 @@
 		<div class="relative w-full">
 			<input
 				bind:value={search}
+				on:input={loadSuggestions}
 				type="search"
-				id="search-dropdown"
 				class="block p-2.5 w-full z-20 text-sm text-gray-900 bg-gray-50 rounded-e-lg border-s-gray-50 border-s-2 border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-s-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:border-blue-500"
 				placeholder="Search {type || ''}"
+				list="search-results"
 				required
 			/>
+			<datalist id="search-results">
+				{#each suggestions as suggestion}
+                	<option value="{suggestion}"></option>
+                {/each}
+			</datalist>
 			<button
 				on:click={searchQuery}
 				type="submit"
-				class="absolute top-0 end-0 p-2.5 text-sm font-medium h-full text-white bg-blue-700 rounded-e-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+				class="absolute top-0 end-0 p-2.5 text-sm font-medium h-full text-white bg-blue-700 border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
 			>
                 {#if loading}
                     <Spinner color="white" size="5"></Spinner>

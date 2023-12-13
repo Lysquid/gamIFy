@@ -58,6 +58,39 @@ ORDER BY DESC (?nbpublished)
     return executeQuery(query);
 }
 
+export async function searchGameSuggestions(filters: Filter[]): Promise<any> {
+    let filter_lines = filters.map(filter => filter.getFilterLine()).join("");
+    let query = `SELECT DISTINCT ?gamelabel WHERE {
+?game a dbo:VideoGame.
+?game rdfs:label ?gamelabel.
+?game dbo:wikiPageLength ?wikipagelength.
+FILTER(lang(?gamelabel) = "en").
+${filter_lines}
+}
+GROUP BY ?game ?gamelabel ?wikipagelength
+ORDER BY DESC(?wikipagelength)
+LIMIT 5
+`;
+
+    return executeQuery(query);
+}
+
+export async function searchPublisherSuggestions(filters: Filter[]): Promise<any> {
+    let filter_lines = filters.map(filter => filter.getFilterLine()).join("");
+    let query = `SELECT ?publisherlabel (count(?published) as ?nbpublished) WHERE {
+?publisher a dbo:Company.
+?publisher rdfs:label ?publisherlabel.
+FILTER(lang(?publisherlabel) = "en").
+${filter_lines}
+?published dbo:publisher ?publisher.
+?published a dbo:VideoGame.
+}
+ORDER BY DESC (?nbpublished)
+LIMIT 5
+`;
+    return executeQuery(query);
+}
+
 export async function searchImage(originalUri: string): Promise<string | undefined> {
     let urlParts = originalUri.split("/");
     let last = urlParts[urlParts.length - 1];
