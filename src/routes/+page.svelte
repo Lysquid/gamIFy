@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { ValueContainsFilter, searchGames, searchImage } from '$lib/requests';
+	import ListBox from '$lib/components/ListBox.svelte';
 	import { Button, Dropdown, DropdownItem, Spinner } from 'flowbite-svelte';
 
 	let search = '';
@@ -158,7 +159,8 @@
                     {/if}
                 </div>
             </a>
-        {/each}
+			<!-- <ListBox url={item.game.value} image={item.image.value} name={item.gamelabel.value} description={item.publisherlabel.value}></ListBox> -->
+		{/each}
     </div>
 {:else if data}
     <p class="text-center m-20 text-lg dark:text-gray-400 text-gray-600">No results</p>
