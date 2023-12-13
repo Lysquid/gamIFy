@@ -13,7 +13,7 @@
 	</div>
 	{#if image}
 		<div class="w-1/3">
-			<table class="w-full">
+			<table class="w-full sticky">
 				<tr>
 					<td class="p-5" colspan="2">
 						<img class="rounded-lg w-full" src={image} alt="Publisher logo" />

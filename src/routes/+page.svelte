@@ -13,12 +13,6 @@
     let loading = false;
 
     let type: string;
-    type = $page.url.searchParams.get("type") || 'games';
-    search = $page.url.searchParams.get("search") || '';
-
-    function searchButton() {
-        goto(`?search=${search}&type=${type}`);
-    }
 
 	async function searchQuery() {
         loading = true;
@@ -42,21 +36,12 @@
         }
 
 
-        // if (data) {
-        //     await Promise.allSettled(
-        //         data.map(async (el: any) => {
-        //             if (el.image) {
-        //                 let img = await searchImage(el.image.value);
-        //                 el.image.value = img;
-        //                 data = data;
-        //             }
-        //         })
-        //     );
-        // }
         loading = false;
 	}
 
     onMount(async () => {
+        type = $page.url.searchParams.get("type") || 'games';
+        search = $page.url.searchParams.get("search") || '';
 
         if(search) {
             await searchQuery();
@@ -84,7 +69,7 @@
 				required
 			/>
 			<button
-				on:click={() => {goto(`?search=${search}&type=${type}`);}}
+				on:click={() => {goto(`?search=${search}&type=${type}`); searchQuery();}}
 				type="submit"
 				class="absolute top-0 end-0 p-2.5 text-sm font-medium h-full text-white bg-blue-700 rounded-e-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
 			>
