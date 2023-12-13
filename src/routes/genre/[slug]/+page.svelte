@@ -31,7 +31,19 @@
 			title={genre_data?.label?.value || ''}
 			description={genre_data?.description?.value || ''}
 			image={genre_data?.image}
-		/>
+		>
+			<div slot="info-entry">
+				<InfoPageTableEntry title="Game count">
+					<p>{genre_data?.gamecount?.value}</p>
+				</InfoPageTableEntry>
+                {#if genre_data?.createdDate?.value}
+				<InfoPageTableEntry title="Creation date">
+					<p>{genre_data?.createdDate?.value}</p>
+				</InfoPageTableEntry>
+
+                {/if}
+			</div>
+		</InfoPage>
 	{:else}
 		Not found
 	{/if}

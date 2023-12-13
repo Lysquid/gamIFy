@@ -138,7 +138,7 @@ export async function searchPublisherInfo(publisher: string): Promise<any> {
 export async function searchGenreInfo(genre: string): Promise<any> {
 
     let query = `
-        SELECT ?label ?description ?image WHERE {
+        SELECT ?label ?description ?image min(?releaseDate) as ?createdDate count(?game) as ?gamecount WHERE {
         BIND(<http://dbpedia.org/resource/${genre}> AS ?genre).
         ?genre rdfs:label ?label.
         ?genre ^dbo:genre ?game.
@@ -146,7 +146,9 @@ export async function searchGenreInfo(genre: string): Promise<any> {
         FILTER(lang(?label) = "en").
         OPTIONAL {?genre dbo:abstract ?description. FILTER(lang(?description) = "en")}.
         OPTIONAL {?genre dbo:thumbnail ?image.}.
+        OPTIONAL {?game dbo:releaseDate ?releaseDate}
         }
+        GROUP BY ?label ?description ?image
         LIMIT 1
     `
     return executeQuery(query);
