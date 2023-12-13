@@ -3,6 +3,8 @@
 	import type { PageData } from './$types';
 	import { searchImage, searchPublisherInfo } from '$lib/requests';
 	import { Spinner, A } from 'flowbite-svelte';
+	import InfoPage from '$lib/components/InfoPage.svelte';
+	import InfoPageTableEntry from '$lib/components/InfoPageTableEntry.svelte';
 
 	export let data: PageData;
 	let loading = true;
@@ -25,23 +27,71 @@
 	{#if loading}
 		<Spinner></Spinner>
 	{:else if publisher_data}
-		<div class="flex flex-row justify-between space-x-10">
-			<div class="mr-auto w-1/2">
-				<h1 class="text-bold text-5xl mb-10">{publisher_data?.publisherlabel?.value}</h1>
-                <p class="text-justify mb-10">{publisher_data?.description?.value || ''}</p>
-				<h1 class="text-bold text-2xl">{'Number of employees'}</h1>
-				<p class="text-justify mb-5">{publisher_data?.emp?.value}</p>
-				<h1 class="text-bold text-2xl">{'Website of the company'}</h1>
-				<A class="text-justify mb-5" href={publisher_data?.homepage?.value}>{publisher_data?.homepage?.value}</A>
-				<h1 class="text-bold text-2xl">{'Key people'}</h1>
-				<p class="text-justify mb-5">{publisher_data?.keyPeople?.value}</p>
-				<h1 class="text-bold text-2xl">{'Headquarters'}</h1>
-				<p class="text-justify mb-5">{publisher_data?.citylabel?.value}</p>
-			</div>
-			{#if publisher_data.image}
-				<img class="w-1/2" src={publisher_data.image} alt="Publisher logo" />
+		<InfoPage
+			title={publisher_data?.publisherlabel?.value || ''}
+			description={publisher_data?.description?.value || ''}
+			image={publisher_data?.image}
+		>
+		<div slot="info-entry"> 
+			{#if publisher_data?.foundingDate?.value}
+				<InfoPageTableEntry
+					title="Founding date"
+				>	
+					<p>{publisher_data?.foundingDate?.value}</p>
+				</InfoPageTableEntry>
+			{/if}
+			{#if publisher_data?.founderName?.value}
+				<InfoPageTableEntry
+					title="Founder"
+				>	
+					<p>{publisher_data?.founderName?.value}</p>
+				</InfoPageTableEntry>
+			{/if}
+			{#if publisher_data?.foundersPeople?.value}
+				<InfoPageTableEntry
+					title="Founders"
+				>	
+					<ul class="list-disc">
+						{#each publisher_data?.foundersPeople?.value.split("|").filter(s => s.trim()) as people}
+							<li>{people}</li>
+						{/each}
+					</ul>
+				</InfoPageTableEntry>
+			{/if}
+			{#if publisher_data?.keyPeople?.value}
+				<InfoPageTableEntry
+					title="Key people"
+				>
+					<ul class="list-disc">
+						{#each publisher_data?.keyPeople?.value.split("|").filter(s => s.trim()) as people}
+							<li>{people}</li>
+						{/each}
+					</ul>
+				</InfoPageTableEntry>
+			{/if}
+			{#if publisher_data?.citylabel?.value}
+				<InfoPageTableEntry
+					title="Headquarters"
+				>
+					<p>{publisher_data?.citylabel?.value}</p>
+				</InfoPageTableEntry>
+			{/if}
+			{#if publisher_data?.emp?.value}
+				<InfoPageTableEntry
+					title="Number of employees"
+				>
+					<p>{publisher_data?.emp?.value}</p>
+				</InfoPageTableEntry>
+			{/if}
+			{#if publisher_data?.homepage?.value}
+				<InfoPageTableEntry
+					title="Website"
+				>
+					<A href={publisher_data?.homepage?.value}>{publisher_data?.homepage?.value}</A>
+				</InfoPageTableEntry>
 			{/if}
 		</div>
+		</InfoPage>
 	{:else}
 		Not found
 	{/if}

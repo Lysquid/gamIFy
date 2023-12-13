@@ -108,8 +108,9 @@ export async function searchGameDetail(detail: string, game: string): Promise<an
 export async function searchPublisherInfo(publisher: string): Promise<any> {
 
     let query = `
-        SELECT ?publisherlabel ?description ?emp ?homepage ?image ?citylabel
-        GROUP_CONCAT(DISTINCT ?people; SEPARATOR=" | ") as ?keyPeople 
+        SELECT ?publisherlabel ?description ?emp ?homepage ?image ?citylabel ?foundingDate ?founderName
+        GROUP_CONCAT(DISTINCT ?people; SEPARATOR=" | ") as ?keyPeople
+        GROUP_CONCAT(DISTINCT ?founders; SEPARATOR=" | ") as ?foundersPeople 
         WHERE {
         BIND(<http://dbpedia.org/resource/${publisher}> AS ?publisher).
         ?publisher rdfs:label ?publisherlabel.
@@ -119,10 +120,15 @@ export async function searchPublisherInfo(publisher: string): Promise<any> {
         OPTIONAL {?publisher foaf:homepage ?homepage.}.
         OPTIONAL {?publisher dbo:thumbnail ?image.}.
         OPTIONAL {?publisher dbo:locationCity ?city. ?city rdfs:label ?citylabel. FILTER(lang(?citylabel) = "en").}.
-        ?publisher dbp:keyPeople ?people.
+        OPTIONAL {?publisher dbp:keyPeople ?people.}
+        OPTIONAL {?publisher dbo:foundingDate ?foundingDate.}
+        OPTIONAL {?publisher dbp:founder ?founder. ?founder rdfs:label ?founderName}
+        {OPTIONAL {?publisher dbp:founders ?founders. FILTER(isLiteral(?founders)).}} UNION 
+        {OPTIONAL{?publisher dbp:founders ?foundersEntity. ?foundersEntity foaf:name ?founders.}}
         ?game dbo:publisher ?publisher.
+        ?game a dbo:VideoGame.
         }
-        GROUP BY ?publisherlabel ?description ?emp ?homepage ?image ?citylabel
+        GROUP BY ?publisherlabel ?description ?emp ?homepage ?image ?citylabel ?foundingDate ?founderName
         LIMIT 1
     `
     return executeQuery(query);
@@ -135,6 +141,7 @@ export async function searchGenreInfo(genre: string): Promise<any> {
         BIND(<http://dbpedia.org/resource/${genre}> AS ?genre).
         ?genre rdfs:label ?label.
         ?genre ^dbo:genre ?game.
+        ?game a dbo:VideoGame.
         FILTER(lang(?label) = "en").
         OPTIONAL {?genre dbo:abstract ?description. FILTER(lang(?description) = "en")}.
         OPTIONAL {?genre dbo:thumbnail ?image.}.
