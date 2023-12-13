@@ -24,28 +24,35 @@
         loading = true;
         data = null;
         if (type==="games") {
-		    data = (await searchGames([new ValueContainsFilter('gamelabel', search)])).results.bindings;
-            data.map(el => el.url = `/game/${encodeURIComponent(el.game.value.split('/').slice(-1))}`);
+		    const res = (await searchGames([new ValueContainsFilter('gamelabel', search)])).results.bindings;
+            data = await Promise.all(res.map(async (el: any) => { return {
+                    url: `/game/${encodeURIComponent(el.game.value.split('/').slice(-1))}`, 
+                    title: el.gamelabel.value,
+                    description: el.publisherlabel ? `Published by : <strong>${el.publisherlabel.value}</strong>`: undefined,
+                    image: el.image ? await searchImage(el.image.value) : undefined
+            }}));
+            console.log(data);
         } else if (type==="publishers") {
-            console.log("editeur");
-            data = (await searchEditors([new ValueContainsFilter('publisherlabel', search)])).results.bindings
-            data.map(el => el.gamelabel = {value: el.publisherlabel.value});
-            data.map(el => el.url = `/publisher/${encodeURIComponent(el.publisher.value.split('/').slice(-1))}`);
-            data.map(el => el.publisherlabel = null);
+            const res = (await searchEditors([new ValueContainsFilter('publisherlabel', search)])).results.bindings
+            data = await Promise.all(res.map(async (el: any) => { return {
+                url: `/publisher/${encodeURIComponent(el.publisher.value.split('/').slice(-1))}`,
+                title: el.publisherlabel.value,
+                image: el.image ? await searchImage(el.image.value) : undefined
+            }}));
         }
 
 
-        if (data) {
-            await Promise.allSettled(
-                data.map(async (el: any) => {
-                    if (el.image) {
-                        let img = await searchImage(el.image.value);
-                        el.image.value = img;
-                        data = data;
-                    }
-                })
-            );
-        }
+        // if (data) {
+        //     await Promise.allSettled(
+        //         data.map(async (el: any) => {
+        //             if (el.image) {
+        //                 let img = await searchImage(el.image.value);
+        //                 el.image.value = img;
+        //                 data = data;
+        //             }
+        //         })
+        //     );
+        // }
         loading = false;
 	}
 

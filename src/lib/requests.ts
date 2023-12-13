@@ -54,7 +54,8 @@ ${filter_lines}
     return executeQuery(query);
 }
 
-export async function searchImage(originalUri: string): Promise<string> {
+export async function searchImage(originalUri: string): Promise<string | undefined> {
+    // console.log(originalUri);
     let urlParts = originalUri.split("/");
     let last = urlParts[urlParts.length - 1];
     let filename = last.split("?")[0];
@@ -64,7 +65,9 @@ export async function searchImage(originalUri: string): Promise<string> {
     let body = await response.json();
     let pageId = Object.keys(body.query.pages)[0];
 
-    return body.query.pages[pageId].imageinfo[0].url;
+    console.log(body.query?.pages[pageId]?.imageinfo?.at(0)?.url);
+
+    return body.query?.pages[pageId]?.imageinfo?.at(0)?.url;
 }
 
 export async function searchGameInfos(game: string): Promise<any> {
