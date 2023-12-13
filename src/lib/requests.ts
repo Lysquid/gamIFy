@@ -92,3 +92,19 @@ export async function searchPublisherInfo(publisher: string): Promise<any> {
     `
     return executeQuery(query);
 }
+
+export async function searchGenreInfo(genre: string): Promise<any> {
+
+    let query = `
+        SELECT ?label ?description ?image WHERE {
+        BIND(<http://dbpedia.org/resource/${genre}> AS ?genre).
+        ?genre rdfs:label ?label.
+        ?genre ^dbo:genre ?game.
+        FILTER(lang(?label) = "en").
+        OPTIONAL {?genre dbo:abstract ?description. FILTER(lang(?description) = "en")}.
+        OPTIONAL {?genre dbo:thumbnail ?image.}.
+        }
+        LIMIT 1
+    `
+    return executeQuery(query);
+}
