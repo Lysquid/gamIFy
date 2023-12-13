@@ -3,6 +3,7 @@
 	import type { PageData } from './$types';
 	import { searchImage, searchGenreInfo } from '$lib/requests';
 	import { Spinner } from 'flowbite-svelte';
+	import InfoPage from '$lib/components/InfoPage.svelte';
 
 	export let data: PageData;
 	let loading = true;
@@ -25,15 +26,12 @@
 	{#if loading}
 		<Spinner></Spinner>
 	{:else if genre_data}
-		<div class="flex flex-row justify-between space-x-10">
-			<div class="mr-auto w-3/4">
-				<h1 class="text-bold text-5xl mb-10">{genre_data?.label?.value}</h1>
-                <p class="text-justify">{genre_data?.description?.value || ''}</p>
-			</div>
-			{#if genre_data.image}
-				<img class="w-1/4" src={genre_data.image} alt="Publisher logo" />
-			{/if}
-		</div>
+		<InfoPage
+			title={genre_data?.label?.value || ''}
+			description={genre_data?.description?.value || ''}
+			image={genre_data?.image}
+            tableInfos = {[]}
+		/>
 	{:else}
 		Not found
 	{/if}
