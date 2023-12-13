@@ -1,22 +1,23 @@
 <script lang="ts">
 
-    export var name:string;
-    export var url:string;
-    export var image:string = '';
-    export var description:string = '';
+    export var data: {title: string, description?: string, image?: string, url: string}[];
 
 </script>
 
-<a href="/game/{encodeURIComponent(url.split('/').slice(-1))}" class="flex bg-white hover:bg-gray-50 shadow-lg dark:bg-gray-700 dark:hover:bg-gray-600 h-32 gap-5 rounded-xl overflow-hidden hover:scale-105 transition cursor-pointer">
-    {#if image}
-    <img class="w-32 object-contain" src="{image}" alt=""/>
-    {:else}
-    <div class="w-32 object-contain"></div>
-    {/if}
-    <div class="my-auto w-96">
-        <h1 class="text-xl">{name}</h1>
-        {#if description}
-            <p class="dark:text-gray-400 text-gray-600">published by <strong>{description}</strong></p>
-        {/if}
-    </div>
-</a>
+<div class="flex flex-col mx-50 gap-5 mt-10 items-center">
+    {#each data as item}
+        <a class="flex bg-white hover:bg-gray-50 shadow-lg dark:bg-gray-700 dark:hover:bg-gray-600 h-32 gap-5 rounded-xl overflow-hidden hover:scale-105 transition cursor-pointer">
+            {#if item.image}
+                <img class="w-32 object-contain" src="{item.image.value}" alt=""/>
+            {:else}
+                <div class="w-32 object-contain"></div>
+            {/if}
+            <div class="my-auto w-96">
+                <h1 class="text-xl">{item.title.value}</h1>
+                {#if item.description}
+                    <p class="dark:text-gray-400 text-gray-600">{item.description.value}</p>
+                {/if}
+            </div>
+        </a>
+    {/each}
+</div>

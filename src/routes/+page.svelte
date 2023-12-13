@@ -144,24 +144,7 @@
 </form>
 
 {#if data && data.length != 0}
-    <div class="flex flex-col mx-50 gap-5 mt-10 items-center">
-        {#each data as item}
-            <a href="/game/{encodeURIComponent(item.game.value.split('/').slice(-1))}" class="flex bg-white hover:bg-gray-50 shadow-lg dark:bg-gray-700 dark:hover:bg-gray-600 h-32 gap-5 rounded-xl overflow-hidden hover:scale-105 transition cursor-pointer">
-                {#if item.image}
-                <img class="w-32 object-contain" src="{item.image.value}" alt=""/>
-                {:else}
-                <div class="w-32 object-contain"></div>
-                {/if}
-                <div class="my-auto w-96">
-                    <h1 class="text-xl">{item.gamelabel.value}</h1>
-                    {#if item.publisherlabel}
-                        <p class="dark:text-gray-400 text-gray-600">published by <strong>{item.publisherlabel.value}</strong></p>
-                    {/if}
-                </div>
-            </a>
-			<!-- <ListBox url={item.game.value} image={item.image.value} name={item.gamelabel.value} description={item.publisherlabel.value}></ListBox> -->
-		{/each}
-    </div>
+        <ListBox data={data}></ListBox>
 {:else if data}
     <p class="text-center m-20 text-lg dark:text-gray-400 text-gray-600">No results</p>
 {/if}
