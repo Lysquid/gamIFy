@@ -49,9 +49,12 @@ export async function searchEditors(filters: Filter[]): Promise<any> {
 ?publisher dbo:industry dbr:Video_game_industry.
 ?publisher dbo:thumbnail ?image.
 ?publisher rdfs:label ?publisherlabel.
+?publisher dbo:wikiPageLength ?wikipagelength.
 FILTER(lang(?publisherlabel) = "en").
 ${filter_lines}
-}`
+}
+ORDER BY DESC(?wikipagelength)
+`
     return executeQuery(query);
 }
 
