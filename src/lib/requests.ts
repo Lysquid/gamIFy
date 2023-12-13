@@ -53,37 +53,34 @@ export async function searchImage(originalUri: string): Promise<string> {
 
 export async function searchGameInfos(game: string): Promise<any> {
     return executeQuery(`
-        SELECT ?title ?image ?description MIN(?date) as ?firstdate WHERE {
+        SELECT ?label ?image ?description MIN(?date) as ?date ?gameEngine WHERE {
             BIND(<http://dbpedia.org/resource/${game}> AS ?game).
-            ?game rdfs:label ?title.
+            ?game rdfs:label ?label.
             OPTIONAL {?game dbo:thumbnail ?image.}
             OPTIONAL {?game dbo:releaseDate ?date.}
-            OPTIONAL {?game dbo:abstract ?description.
-            FILTER(lang(?description) = "en").}
-            FILTER(lang(?title) = "en").
+            OPTIONAL {
+                ?game dbo:abstract ?description.
+                FILTER(lang(?description) = "en").
+            }
+            OPTIONAL {
+                ?game dbo:gameEngine ?gameEngineUri.
+                ?gameEngineUri rdfs:label ?gameEngine.
+                FILTER(lang(?gameEngine) = "en").
+            }
+            FILTER(lang(?label) = "en").
         }
         LIMIT 1
     `);
 }
 
-export async function searchGamePlatforms(game: string): Promise<any> {
+export async function searchGameDetail(detail: string, game: string): Promise<any> {
     return executeQuery(`
-        SELECT ?platform ?label WHERE {
+        SELECT ?uri ?label ?image WHERE {
             BIND(<http://dbpedia.org/resource/${game}> AS ?game).
-            ?game dbo:computingPlatform ?platform.
-            ?platform rdfs:label ?label.
+            ?game dbo:${detail} ?uri.
+            ?uri rdfs:label ?label.
             FILTER(lang(?label) = "en").
-        }
-    `);
-}
-
-export async function searchGameGenres(game: string): Promise<any> {
-    return executeQuery(`
-        SELECT ?genre ?label WHERE {
-            BIND(<http://dbpedia.org/resource/${game}> AS ?game).
-            ?game dbo:genre ?genre.
-            ?genre rdfs:label ?label.
-            FILTER(lang(?label) = "en").
+            OPTIONAL {?game dbo:thumbnail ?image.}
         }
     `);
 }
