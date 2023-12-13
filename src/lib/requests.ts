@@ -110,7 +110,6 @@ export async function searchPublisherInfo(publisher: string): Promise<any> {
     let query = `
         SELECT ?publisherlabel ?description ?emp ?homepage ?image ?citylabel ?foundingDate ?founderName
         GROUP_CONCAT(DISTINCT ?people; SEPARATOR=" | ") as ?keyPeople
-        GROUP_CONCAT(DISTINCT ?founders; SEPARATOR=" | ") as ?foundersPeople 
         WHERE {
         BIND(<http://dbpedia.org/resource/${publisher}> AS ?publisher).
         ?publisher rdfs:label ?publisherlabel.
@@ -123,8 +122,6 @@ export async function searchPublisherInfo(publisher: string): Promise<any> {
         OPTIONAL {?publisher dbp:keyPeople ?people.}
         OPTIONAL {?publisher dbo:foundingDate ?foundingDate.}
         OPTIONAL {?publisher dbp:founder ?founder. ?founder rdfs:label ?founderName}
-        {OPTIONAL {?publisher dbp:founders ?founders. FILTER(isLiteral(?founders)).}} UNION 
-        {OPTIONAL{?publisher dbp:founders ?foundersEntity. ?foundersEntity foaf:name ?founders.}}
         ?game dbo:publisher ?publisher.
         ?game a dbo:VideoGame.
         }
