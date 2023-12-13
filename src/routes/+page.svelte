@@ -2,7 +2,7 @@
 	import ListBox from '$lib/components/ListBox.svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { ValueContainsFilter, searchEditors, searchGames, searchImage } from '$lib/requests';
+	import { ValueContainsFilter, searchGames, searchImage, searchPublishers } from '$lib/requests';
 	import { Spinner } from 'flowbite-svelte';
 	import { onMount } from 'svelte';
 
@@ -26,7 +26,7 @@
                     image: el.image ? await searchImage(el.image.value) : undefined
             }}));
         } else if (type==="publishers") {
-            const res = (await searchEditors([new ValueContainsFilter('publisherlabel', search)])).results.bindings
+            const res = (await searchPublishers([new ValueContainsFilter('publisherlabel', search)])).results.bindings
             data = await Promise.all(res.map(async (el: any) => { return {
                 url: `/publisher/${encodeURIComponent(el.publisher.value.split('/').slice(-1))}`,
                 title: el.publisherlabel.value,
@@ -64,7 +64,7 @@
 				type="search"
 				id="search-dropdown"
 				class="block p-2.5 w-full z-20 text-sm text-gray-900 bg-gray-50 rounded-e-lg border-s-gray-50 border-s-2 border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-s-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:border-blue-500"
-				placeholder="Search {type}"
+				placeholder="Search {type || ''}"
 				required
 			/>
 			<button

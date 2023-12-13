@@ -1,6 +1,6 @@
 import { executeQuery } from "$lib";
 
-type FilterAttribute = "gamelabel" | "publisher";
+type FilterAttribute = "gamelabel" | "publisherlabel";
 
 interface Filter {
     getFilterLine(): string;
@@ -41,7 +41,7 @@ limit 100`;
     return executeQuery(query);
 }
 
-export async function searchEditors(filters: Filter[]): Promise<any> {
+export async function searchPublishers(filters: Filter[]): Promise<any> {
     let filter_lines = filters.map(filter => filter.getFilterLine()).join("");
 
     let query = `SELECT ?publisher ?publisherlabel ?image (count(?published) as ?nbpublished) WHERE {
