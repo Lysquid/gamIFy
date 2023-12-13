@@ -5,6 +5,7 @@
 	import { ValueContainsFilter, searchGames, searchImage, searchPublishers } from '$lib/requests';
 	import { Spinner } from 'flowbite-svelte';
 	import { onMount } from 'svelte';
+	import type { Snapshot } from './$types';
 
 	let search = '';
 
@@ -38,14 +39,10 @@
         loading = false;
 	}
 
-    onMount(async () => {
-        type = $page.url.searchParams.get("type") || 'games';
-        search = $page.url.searchParams.get("search") || '';
-
-        if(search) {
-            await searchQuery();
-        }
-    })
+	export const snapshot: Snapshot<any[]> = {
+		capture: () => [data, search, type],
+		restore: (value) => {[data, search, type] = value},
+	}
 </script>
 
 <p class="text-gray-900 dark:text-white text-center text-2xl my-10">
@@ -68,7 +65,7 @@
 				required
 			/>
 			<button
-				on:click={() => {goto(`?search=${search}&type=${type}`); searchQuery();}}
+				on:click={searchQuery}
 				type="submit"
 				class="absolute top-0 end-0 p-2.5 text-sm font-medium h-full text-white bg-blue-700 rounded-e-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
 			>
