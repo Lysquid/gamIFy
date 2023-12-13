@@ -22,7 +22,7 @@
             data = await Promise.all(res.map(async (el: any) => { return {
                     url: `/game/${encodeURIComponent(el.game.value.split('/').slice(-1))}`, 
                     title: el.gamelabel.value,
-                    description: el.publisherlabel ? `Published by : <strong>${el.publisherlabel.value}</strong>`: undefined,
+                    description: el.publisherlabel.value != "" ? `Published by : <strong>${el.publisherlabel.value}</strong>`: undefined,
                     image: el.image ? await searchImage(el.image.value) : undefined
             }}));
         } else if (type==="publishers") {
