@@ -4,6 +4,7 @@
 	import { searchImage, searchGenreInfo } from '$lib/requests';
 	import { Spinner } from 'flowbite-svelte';
 	import InfoPage from '$lib/components/InfoPage.svelte';
+	import InfoPageTableEntry from '$lib/components/InfoPageTableEntry.svelte';
 
 	export let data: PageData;
 	let loading = true;
@@ -30,7 +31,6 @@
 			title={genre_data?.label?.value || ''}
 			description={genre_data?.description?.value || ''}
 			image={genre_data?.image}
-            tableInfos = {[]}
 		/>
 	{:else}
 		Not found

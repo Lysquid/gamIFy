@@ -2,15 +2,14 @@
 	export let title: string;
 	export let description: string;
 	export let image: string;
-	console.log(image);
-	export let tableInfos: [string, string | string[]][];
+	console.log($$slots);
 </script>
 
 <div class="w-full lg:w-2/3 m-auto flex flex-row justify-between space-x-10">
 	<div class="mr-auto w-2/3">
 		<h1 class="text-bold text-5xl mb-10">{title}</h1>
 		<p class="text-justify">{description || ''}</p>
-		<slot />
+		<slot name="content"/>
 	</div>
 	{#if image}
 		<div class="w-1/3">
@@ -20,22 +19,7 @@
 						<img class="rounded-lg w-full" src={image} alt="Publisher logo" />
 					</td>
 				</tr>
-				{#each tableInfos as [title, value]}
-					<tr>
-						<td class="p-5"><strong>{title}</strong></td>
-						<td class="p-5">
-							{#if typeof value === 'string'}
-								{value}
-							{:else}
-								<ul class="list-disc">
-									{#each value as val}
-										<li>{val}</li>
-									{/each}
-								</ul>
-							{/if}
-						</td>
-					</tr>
-				{/each}
+				<slot name="info-entry"/>
 			</table>
 		</div>
 	{/if}
