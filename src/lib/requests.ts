@@ -44,12 +44,13 @@ limit 100`;
 export async function searchEditors(filters: Filter[]): Promise<any> {
     let filter_lines = filters.map(filter => filter.getFilterLine()).join("");
 
-    let query = `SELECT ?publisher ?publisherlabel ?image WHERE {
+    let query = `SELECT DISTINCT ?publisher ?publisherlabel ?image WHERE {
 ?publisher a dbo:Company.
 ?publisher dbo:industry dbr:Video_game_industry.
 ?publisher dbo:thumbnail ?image.
 ?publisher rdfs:label ?publisherlabel.
 ?publisher dbo:wikiPageLength ?wikipagelength.
+?game dbo:publisher ?publisher.
 FILTER(lang(?publisherlabel) = "en").
 ${filter_lines}
 }
