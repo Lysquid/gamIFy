@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import type { PageData } from './$types';
-	import { searchGameInfos, searchGamePlatforms, searchGameGenre, searchImage } from '$lib/requests';
-	import { deserialize } from '$app/forms';
+	import { searchGameInfos, searchGamePlatforms, searchGameGenres, searchImage } from '$lib/requests';
+	import InfoPage from '$lib/components/InfoPage.svelte';
 	
 	export let data: PageData;
 	let game: null | any;
@@ -27,30 +27,21 @@
 	});
 
 	onMount(async () => {
-		const results = await searchGameGenre(data.slug);
+		const results = await searchGameGenres(data.slug);
 		genres = results.results.bindings;
 	});
-
 </script>
 
-<h1 class="text-2xl">{data.slug}</h1>
 
-{#if found}
-
-	{#if game}
-
-		{#if game.image}
-			<img class="w-1/4" src={game.image.value} alt="Game logo" />
-		{/if}
-
-		{#if game.description}
-			<p>{game.description.value}</p>
-		{/if}
-	{:else}
-		<p>Loading...</p>
-	{/if}
-
+<InfoPage
+	title={data.slug}
+	description={game?.description?.value || ''}
+	image={game?.image?.value || ''}
+	tableInfos = {[]}
+>
+<slot>
 	{#if platforms}
+		<h1 class="text-3xl mt-10">Platforms</h1>
 		<ul>
 			{#each platforms as platform}
 				<li>{platform.label.value}</li>
@@ -59,13 +50,12 @@
 	{/if}
 
 	{#if genres}
+		<h1 class="text-3xl mt-10">Genre</h1>
 		<ul>
 			{#each genres as genre}
 				<li>{genre.label.value}</li>
 			{/each}
 		</ul>
 	{/if}
-
-{:else}
-	<p>Not found</p>
-{/if}
+</slot>
+</InfoPage>

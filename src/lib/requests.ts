@@ -77,7 +77,7 @@ export async function searchGamePlatforms(game: string): Promise<any> {
     `);
 }
 
-export async function searchGameGenre(game: string): Promise<any> {
+export async function searchGameGenres(game: string): Promise<any> {
     return executeQuery(`
         SELECT ?genre ?label WHERE {
             BIND(<http://dbpedia.org/resource/${game}> AS ?game).
