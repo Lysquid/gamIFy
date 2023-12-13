@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import type { PageData } from './$types';
 	import { searchGameInfos, searchGamePlatforms } from '$lib/requests';
+	import { deserialize } from '$app/forms';
 	
 	export let data: PageData;
 	let game: null | any;
@@ -21,13 +22,20 @@
 		platforms = results.results.bindings;
 	});
 
+	onMount(async () => {
+		const results = await searchGamePlatforms(data.slug);
+		platforms = results.results.bindings;
+	});
+
 </script>
 
 <h1 class="text-2xl">{data.slug}</h1>
 
 {#if found}
 	{#if game}
-		<p>{game.description.value}</p>
+		{#if game.description}
+			<p>{game.description.value}</p>
+		{/if}
 	{:else}
 		<p>Loading...</p>
 	{/if}
@@ -35,7 +43,7 @@
 	{#if platforms}
 		<ul>
 			{#each platforms as platform}
-				<li>{platform.platform.value}</li>
+				<li>{platform.label.value}</li>
 			{/each}
 		</ul>
 	{/if}

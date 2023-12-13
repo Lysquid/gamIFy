@@ -1,6 +1,6 @@
 import { executeQuery } from "$lib";
 
-type FilterAttribute = "gamelabel" | "publisherlabel";
+type FilterAttribute = "gamelabel" | "publisher";
 
 interface Filter {
     getFilterLine(): string;
@@ -23,12 +23,12 @@ export class ValueContainsFilter implements Filter {
 export async function searchGames(filters: Filter[]): Promise<any> {
     let filter_lines = filters.map(filter => filter.getFilterLine()).join("");
 
-    let query = `SELECT DISTINCT ?game ?gamelabel ?publisherlabel ?image WHERE {
+    let query = `SELECT DISTINCT ?game ?gamelabel ?publisher ?image WHERE {
 ?game a dbo:VideoGame.
 OPTIONAL {?game dbo:thumbnail ?image.}
 OPTIONAL {?game dbo:publisher ?publisher.
-?publisher rdfs:label ?publisherlabel.
-FILTER(lang(?publisherlabel) = "en").}
+?publisher rdfs:label ?publisher.
+FILTER(lang(?publisher) = "en").}
 ?game rdfs:label ?gamelabel.
 FILTER(lang(?gamelabel) = "en").
 ${filter_lines}
@@ -68,9 +68,11 @@ export async function searchGameInfos(game: string): Promise<any> {
 
 export async function searchGamePlatforms(game: string): Promise<any> {
     return executeQuery(`
-        SELECT ?platform WHERE {
+        SELECT ?platform ?label WHERE {
             BIND(<http://dbpedia.org/resource/${game}> AS ?game).
             ?game dbo:computingPlatform ?platform.
+            ?platform rdfs:label ?label.
+            FILTER(lang(?label) = "en").
         }
     `);
 }
