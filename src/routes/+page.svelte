@@ -25,7 +25,6 @@
                     description: el.publisherlabel ? `Published by : <strong>${el.publisherlabel.value}</strong>`: undefined,
                     image: el.image ? await searchImage(el.image.value) : undefined
             }}));
-            console.log(data);
         } else if (type==="publishers") {
             const res = (await searchEditors([new ValueContainsFilter('publisherlabel', search)])).results.bindings
             data = await Promise.all(res.map(async (el: any) => { return {

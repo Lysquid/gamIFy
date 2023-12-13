@@ -56,7 +56,6 @@ ${filter_lines}
 }
 
 export async function searchImage(originalUri: string): Promise<string | undefined> {
-    // console.log(originalUri);
     let urlParts = originalUri.split("/");
     let last = urlParts[urlParts.length - 1];
     let filename = last.split("?")[0];
@@ -65,8 +64,6 @@ export async function searchImage(originalUri: string): Promise<string | undefin
     let response = await fetch(apiRequestUrl);
     let body = await response.json();
     let pageId = Object.keys(body.query.pages)[0];
-
-    console.log(body.query?.pages[pageId]?.imageinfo?.at(0)?.url);
 
     return body.query?.pages[pageId]?.imageinfo?.at(0)?.url;
 }
