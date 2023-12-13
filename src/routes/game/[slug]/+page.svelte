@@ -1,12 +1,13 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import type { PageData } from './$types';
-	import { searchGameInfos, searchGamePlatforms } from '$lib/requests';
+	import { searchGameInfos, searchGamePlatforms, searchGameGenre } from '$lib/requests';
 	import { deserialize } from '$app/forms';
 	
 	export let data: PageData;
 	let game: null | any;
 	let platforms: null | any;
+	let genres: null | any;
 	let found: boolean = true;
 
 	onMount(async () => {
@@ -23,8 +24,8 @@
 	});
 
 	onMount(async () => {
-		const results = await searchGamePlatforms(data.slug);
-		platforms = results.results.bindings;
+		const results = await searchGameGenre(data.slug);
+		genres = results.results.bindings;
 	});
 
 </script>
@@ -44,6 +45,14 @@
 		<ul>
 			{#each platforms as platform}
 				<li>{platform.label.value}</li>
+			{/each}
+		</ul>
+	{/if}
+
+	{#if genres}
+		<ul>
+			{#each genres as genre}
+				<li>{genre.label.value}</li>
 			{/each}
 		</ul>
 	{/if}
