@@ -1,38 +1,46 @@
 <script lang="ts">
 	import ListBox from '$lib/components/ListBox.svelte';
-	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
 	import { ValueContainsFilter, searchGames, searchImage, searchPublishers } from '$lib/requests';
 	import { Spinner } from 'flowbite-svelte';
-	import { onMount } from 'svelte';
 	import type { Snapshot } from './$types';
 
 	let search = '';
 
 	let data: any[] | null = null;
 
+	let error: boolean = false;
+
     let loading = false;
 
     let type: string;
 
 	async function searchQuery() {
+		error = false;
         loading = true;
         data = null;
         if (type==="games") {
-		    const res = (await searchGames([new ValueContainsFilter('gamelabel', search)])).results.bindings;
-            data = await Promise.all(res.map(async (el: any) => { return {
-                    url: `/game/${encodeURIComponent(el.game.value.split('/').slice(-1))}`, 
-                    title: el.gamelabel.value,
-                    description: el.publisherlabel.value != "" ? `Published by : <strong>${el.publisherlabel.value}</strong>`: undefined,
-                    image: el.image ? await searchImage(el.image.value) : undefined
-            }}));
+		    const res = (await searchGames([new ValueContainsFilter('gamelabel', search)]))?.results.bindings;
+			if (!res) {
+				error = true;
+			} else {
+	            data = await Promise.all(res.map(async (el: any) => { return {
+	                    url: `/game/${encodeURIComponent(el.game.value.split('/').slice(-1))}`, 
+	                    title: el.gamelabel.value,
+	                    description: el.publisherlabel.value != "" ? `Published by : <strong>${el.publisherlabel.value}</strong>`: undefined,
+	                    image: el.image ? await searchImage(el.image.value) : undefined
+	            }}));
+			}
         } else if (type==="publishers") {
-            const res = (await searchPublishers([new ValueContainsFilter('publisherlabel', search)])).results.bindings
-            data = await Promise.all(res.map(async (el: any) => { return {
-                url: `/publisher/${encodeURIComponent(el.publisher.value.split('/').slice(-1))}`,
-                title: el.publisherlabel.value,
-                image: el.image ? await searchImage(el.image.value) : undefined
-            }}));
+            const res = (await searchPublishers([new ValueContainsFilter('publisherlabel', search)]))?.results.bindings
+			if (!res) {
+				error = true;
+			} else {
+	            data = await Promise.all(res.map(async (el: any) => { return {
+	                url: `/publisher/${encodeURIComponent(el.publisher.value.split('/').slice(-1))}`,
+	                title: el.publisherlabel.value,
+	                image: el.image ? await searchImage(el.image.value) : undefined
+	            }}));
+			}
         }
 
 
@@ -50,7 +58,7 @@
 </p>
 <form>
 	<div class="flex max-w-3xl m-auto rounded-lg overflow-hidden">       
-		<select class="bg-blue-500 px-5" bind:value={type}>
+		<select class="bg-blue-500 px-5 text-white" bind:value={type}>
 			<option value="games">Games</option>
 			<option value="publishers">Publishers</option>
 		</select>
@@ -94,7 +102,9 @@
 	</div>
 </form>
 
-{#if data && data.length != 0}
+{#if error}
+    <p class="text-center m-20 text-lg dark:text-red-400 text-red-600">Error loading data</p>
+{:else if data && data.length != 0}
         <ListBox data={data}></ListBox>
 {:else if data}
     <p class="text-center m-20 text-lg dark:text-gray-400 text-gray-600">No results</p>
