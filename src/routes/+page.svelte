@@ -1,7 +1,10 @@
 <script lang="ts">
-	import { ValueContainsFilter, searchGames, searchImage } from '$lib/requests';
 	import ListBox from '$lib/components/ListBox.svelte';
-	import { Button, Dropdown, DropdownItem, Spinner } from 'flowbite-svelte';
+	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
+	import { ValueContainsFilter, searchEditors, searchGames, searchImage } from '$lib/requests';
+	import { Spinner } from 'flowbite-svelte';
+	import { onMount } from 'svelte';
 
 	let search = '';
 
@@ -9,9 +12,28 @@
 
     let loading = false;
 
+    let type: string;
+    type = $page.url.searchParams.get("type") || 'games';
+    search = $page.url.searchParams.get("search") || '';
+
+    function searchButton() {
+        goto(`?search=${search}&type=${type}`);
+    }
+
 	async function searchQuery() {
         loading = true;
-		data = (await searchGames([new ValueContainsFilter('gamelabel', search)])).results.bindings;
+        data = null;
+        if (type==="games") {
+		    data = (await searchGames([new ValueContainsFilter('gamelabel', search)])).results.bindings;
+            data.map(el => el.url = `/game/${encodeURIComponent(el.game.value.split('/').slice(-1))}`);
+        } else if (type==="publishers") {
+            console.log("editeur");
+            data = (await searchEditors([new ValueContainsFilter('publisherlabel', search)])).results.bindings
+            data.map(el => el.gamelabel = {value: el.publisherlabel.value});
+            data.map(el => el.url = `/publisher/${encodeURIComponent(el.publisher.value.split('/').slice(-1))}`);
+            data.map(el => el.publisherlabel = null);
+        }
+
 
         if (data) {
             await Promise.allSettled(
@@ -26,83 +48,24 @@
         }
         loading = false;
 	}
+
+    onMount(async () => {
+
+        if(search) {
+            await searchQuery();
+        }
+    })
 </script>
 
 <p class="text-gray-900 dark:text-white text-center text-2xl my-10">
 	The ultimate Video Game search engine !
 </p>
 <form>
-	<div class="flex max-w-3xl m-auto">
-		<!-- <label
-			for="search-dropdown"
-			class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Your Email</label
-		>
-		<button
-			id="dropdown-button"
-			data-dropdown-toggle="dropdown"
-			class="flex-shrink-0 z-10 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-gray-900 bg-gray-100 border border-gray-300 rounded-s-lg hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700 dark:text-white dark:border-gray-600"
-			type="button"
-		>
-			All categories
-			<svg
-				class="w-2.5 h-2.5 ms-2.5"
-				aria-hidden="true"
-				xmlns="http://www.w3.org/2000/svg"
-				fill="none"
-				viewBox="0 0 10 6"
-			>
-				<path
-					stroke="currentColor"
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					stroke-width="2"
-					d="m1 1 4 4 4-4"
-				/></svg
-			>
-		</button>
-		<div
-			id="dropdown"
-			class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700"
-		>
-			<ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdown-button">
-				<li>
-					<button
-						type="button"
-						class="inline-flex w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-						>Mockups</button
-					>
-				</li>
-				<li>
-					<button
-						type="button"
-						class="inline-flex w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-						>Templates</button
-					>
-				</li>
-				<li>
-					<button
-						type="button"
-						class="inline-flex w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-						>Design</button
-					>
-				</li>
-				<li>
-					<button
-						type="button"
-						class="inline-flex w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-						>Logos</button
-					>
-				</li>
-			</ul>
-		</div> -->
-        
-        <Button>Dropdown</Button>
-        <Dropdown class="bg-blue-500">
-            <DropdownItem>Dashboard</DropdownItem>
-            <DropdownItem>Settings</DropdownItem>
-            <DropdownItem>Earnings</DropdownItem>
-            <DropdownItem>Sign out</DropdownItem>
-        </Dropdown>
+	<div class="flex max-w-3xl m-auto rounded-lg overflow-hidden">       
+		<select class="bg-blue-500 px-5" bind:value={type}>
+			<option value="games">Games</option>
+			<option value="publishers">Publishers</option>
+		</select>
 
 		<div class="relative w-full">
 			<input
@@ -110,11 +73,11 @@
 				type="search"
 				id="search-dropdown"
 				class="block p-2.5 w-full z-20 text-sm text-gray-900 bg-gray-50 rounded-e-lg border-s-gray-50 border-s-2 border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-s-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:border-blue-500"
-				placeholder="Search games, publishers, genres..."
+				placeholder="Search {type}"
 				required
 			/>
 			<button
-				on:click={searchQuery}
+				on:click={() => {goto(`?search=${search}&type=${type}`);}}
 				type="submit"
 				class="absolute top-0 end-0 p-2.5 text-sm font-medium h-full text-white bg-blue-700 rounded-e-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
 			>
