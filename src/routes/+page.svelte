@@ -1,12 +1,12 @@
 <script lang="ts">
-	import ListBox from '$lib/components/ListBox.svelte';
+	import ListBox, { type ListBoxDataType } from '$lib/components/ListBox.svelte';
 	import { ValueContainsFilter, searchGames, searchImage, searchPublishers } from '$lib/requests';
 	import { Spinner } from 'flowbite-svelte';
 	import type { Snapshot } from './$types';
 
 	let search = '';
 
-	let data: any[] | null = null;
+	let data: ListBoxDataType[] | null = null;
 
 	let error: boolean = false;
 
@@ -23,11 +23,11 @@
 			if (!res) {
 				error = true;
 			} else {
-	            data = await Promise.all(res.map(async (el: any) => { return {
+	            data = await Promise.all(res.map(async (el: any): Promise<ListBoxDataType> => { return {
 	                    url: `/game/${encodeURIComponent(el.game.value.split('/').slice(-1))}`, 
 	                    title: el.gamelabel.value,
 	                    description: el.publisherlabel.value != "" ? `Published by : <strong>${el.publisherlabel.value}</strong>`: undefined,
-	                    image: el.image ? await searchImage(el.image.value) : undefined
+	                    image: el.image ? await searchImage(el.image.value) : undefined,
 	            }}));
 			}
         } else if (type==="publishers") {
@@ -35,10 +35,10 @@
 			if (!res) {
 				error = true;
 			} else {
-	            data = await Promise.all(res.map(async (el: any) => { return {
+	            data = await Promise.all(res.map(async (el: any): Promise<ListBoxDataType> => { return {
 	                url: `/publisher/${encodeURIComponent(el.publisher.value.split('/').slice(-1))}`,
 	                title: el.publisherlabel.value,
-	                image: el.image ? await searchImage(el.image.value) : undefined
+	                image: el.image ? await searchImage(el.image.value) : undefined,
 	            }}));
 			}
         }

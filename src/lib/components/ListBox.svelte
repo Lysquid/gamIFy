@@ -1,6 +1,16 @@
+<script context="module" lang="ts">
+    export type ListBoxDataType = {
+        title: string, 
+        description?: string, 
+        image?: string, 
+        url: string
+    };
+    
+</script>
+
 <script lang="ts">
 
-    export var data: {title: string, description?: string, image?: string, url: string}[];
+    export var data: ListBoxDataType[];
 
 </script>
 
