@@ -4,9 +4,9 @@
     let suggestions: string[] = [];
     let loading = false;
     export let search: string = '';
-    export let getSuggestions: (search: string) => Promise<string[]>;
-    export let onSearch: (search: string) => Promise<void>;
-    export let placeholder: string;
+    export let getSuggestions: (search: string) => Promise<string[]> = async (_) => [];
+    export let onSearch: (search: string) => Promise<void> = async (_) => {};
+    export let placeholder: string = 'Search...';
 </script>
 
 
