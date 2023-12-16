@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import type { PageData } from './$types';
-	import { searchGameInfos, searchGameDetail, searchImage } from '$lib/requests';
+	import { searchGameInfos, searchList, searchImage } from '$lib/requests';
 	import InfoPage from '$lib/components/InfoPage.svelte';
 	import { Spinner } from 'flowbite-svelte';
 	import InfoPageTableEntry from '$lib/components/InfoPageTableEntry.svelte';
@@ -25,20 +25,19 @@
 	});
 
 	onMount(async () => {
-		const results = await searchGameDetail("computingPlatform", data.slug);
-		platforms = results.results.bindings;
+		platforms = (await searchList("computingPlatform", data.slug, 5)).results.bindings;
 	});
 
 	onMount(async () => {
-		genres = (await searchGameDetail("genre", data.slug)).results.bindings;
+		genres = (await searchList("genre", data.slug)).results.bindings;
 	});
 
 	onMount(async () => {
-		publishers = (await searchGameDetail("publisher", data.slug)).results.bindings;
+		publishers = (await searchList("publisher", data.slug)).results.bindings;
 	});
 
 	onMount(async () => {
-		developers = (await searchGameDetail("developer", data.slug)).results.bindings;
+		developers = (await searchList("developer", data.slug)).results.bindings;
 	});
 
 </script>

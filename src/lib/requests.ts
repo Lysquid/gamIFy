@@ -194,18 +194,46 @@ export async function searchGameInfos(game: string): Promise<any> {
     `);
 }
 
-export async function searchGameDetail(detail: string, game: string): Promise<any> {
+export async function searchPlatformInfos(platform: string): Promise<any> {
+    return executeQuery(`
+        SELECT 
+            ?label
+            ?image
+            ?description
+            ?date
+            COUNT(?game) as ?nb_games
+        WHERE {
+            BIND(<http://dbpedia.org/resource/${platform}> AS ?uri).
+            ?uri rdfs:label ?label.
+            FILTER(lang(?label) = "en").
+            OPTIONAL {?uri dbo:thumbnail ?image.}
+            OPTIONAL {
+                ?uri dbp:date ?date.
+                FILTER(lang(?description) = "en").
+            }
+            OPTIONAL {
+                ?uri rdfs:comment ?description.
+                FILTER(lang(?description) = "en").
+            }
+            ?game dbo:computingPlatform ?uri.
+        }
+        GROUP BY ?label ?image ?description ?date
+        LIMIT 1
+    `);
+}
+
+export async function searchList(type: string, source: string, limit=5, reverse=false): Promise<any> {
     return executeQuery(`
         SELECT ?uri ?label ?image WHERE {
-            BIND(<http://dbpedia.org/resource/${game}> AS ?game).
-            ?game dbo:${detail} ?uri.
+            BIND(<http://dbpedia.org/resource/${source}> AS ?source).
+            ${reverse ? '?uri' : '?source'} dbo:${type} ${reverse ? '?source' : '?uri'}.
             ?uri rdfs:label ?label.
             ?uri dbo:wikiPageLength ?wikipagelength.
             FILTER(lang(?label) = "en").
             OPTIONAL {?uri dbo:thumbnail ?image.}
         }
         ORDER BY DESC(?wikipagelength)
-        LIMIT 5
+        ${limit > 0 ? 'LIMIT ' + limit : ''}
     `);
 }
 
