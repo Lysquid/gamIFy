@@ -63,17 +63,17 @@
 					{game.date.value}
 				</InfoPageTableEntry>
 			{/if}
-			{#if game.gameEngine}
+			{#if game.gameEngines?.value}
 				<InfoPageTableEntry title="Game engine">
-					{game.gameEngine.value}
+					{game.gameEngines.value}
 				</InfoPageTableEntry>
 			{/if}
-			{#if game.series}
+			{#if game.series?.value}
 				<InfoPageTableEntry title="Series">
 					{game.series.value}
 				</InfoPageTableEntry>
 			{/if}
-			{#if game.modes}
+			{#if game.modes?.value}
 				<InfoPageTableEntry title="Modes">
 					{game.modes.value}
 				</InfoPageTableEntry>
@@ -88,7 +88,7 @@
 
 		<div slot="content" class="grid xl:grid-cols-2 gap-x-8 gap-y-8 mt-10">
 
-			{#if publishers}
+			{#if publishers?.length}
 				<div>
 					<h1 class="text-3xl">Publishers</h1>
 					{#each publishers as publisher}
@@ -97,7 +97,7 @@
 				</div>
 			{/if}
 
-			{#if developers}
+			{#if developers?.length}
 				<div>
 					<h1 class="text-3xl">Developers</h1>
 					{#each developers as developer}
@@ -106,7 +106,7 @@
 				</div>
 			{/if}
 
-			{#if genres}
+			{#if genres?.length}
 				<div>
 					<h1 class="text-3xl">Genres</h1>
 					{#each genres as genre}
@@ -115,7 +115,7 @@
 				</div>
 			{/if}
 
-			{#if platforms}
+			{#if platforms?.length}
 				<div>
 					<h1 class="text-3xl">Platforms</h1>
 					{#each platforms as platform}
