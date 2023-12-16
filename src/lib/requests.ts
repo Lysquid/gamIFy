@@ -119,6 +119,7 @@ export async function searchGameInfos(game: string): Promise<any> {
             group_concat(distinct ?gameEngine; separator=", ") as ?gameEngines
             group_concat(distinct ?oneSeries; separator=", ") as ?series
             group_concat(distinct ?mode; separator=", ") as ?modes
+            SUM(?IGN)/COUNT(?IGN) as ?IGN
         WHERE {
             BIND(<http://dbpedia.org/resource/${game}> AS ?game).
             ?game rdfs:label ?label.
@@ -148,6 +149,19 @@ export async function searchGameInfos(game: string): Promise<any> {
                 ?modeUri rdfs:label ?mode.
                 FILTER(lang(?mode) = "en"). 
             }
+            OPTIONAL {
+                {
+                    ?game dbp:ign ?IGN.
+                    FILTER(?IGN<=10).
+                }
+                UNION
+                {
+                    ?game dbp:ign ?hundred.
+                    FILTER(?hundred>10).
+                    FILTER(?hundred<=100). 
+                    BIND((?hundred/10.0) AS ?IGN).
+                }
+            }
             FILTER(lang(?label) = "en").
         }
         GROUP BY ?label ?image ?description ?date
@@ -167,29 +181,6 @@ export async function searchGameDetail(detail: string, game: string): Promise<an
         }
         ORDER BY DESC(?wikipagelength)
         LIMIT 5
-    `);
-}
-
-export async function searchIGNScore(game: string): Promise<any> {
-    return executeQuery(`
-        SELECT 
-            SUM(?IGN)/COUNT(?IGN) as ?IGN
-        WHERE {
-            {       
-                BIND(<http://dbpedia.org/resource/${game}> AS ?game).
-                ?game dbp:ign ?IGN.
-                FILTER(?IGN<=10).
-            }
-            UNION
-            { 
-                BIND(<http://dbpedia.org/resource/${game}> AS ?game).
-                ?game dbp:ign ?hundred.
-                FILTER(?hundred>10).
-                FILTER(?hundred<=100). 
-                BIND((?hundred/10.0) AS ?IGN).
-            }
-        }
-        LIMIT 1
     `);
 }
 

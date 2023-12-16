@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import type { PageData } from './$types';
-	import { searchGameInfos, searchGameDetail, searchImage, searchIGNScore } from '$lib/requests';
+	import { searchGameInfos, searchGameDetail, searchImage } from '$lib/requests';
 	import InfoPage from '$lib/components/InfoPage.svelte';
 	import { Spinner } from 'flowbite-svelte';
 	import InfoPageTableEntry from '$lib/components/InfoPageTableEntry.svelte';
@@ -13,7 +13,6 @@
 	let publishers: null | any;
 	let developers: null | any;
 	let genres: null | any;
-	let ignScore: null | any;
 	let loading: boolean = true;
 
 	onMount(async () => {
@@ -40,10 +39,6 @@
 
 	onMount(async () => {
 		developers = (await searchGameDetail("developer", data.slug)).results.bindings;
-	});
-
-	onMount(async () => {
-		ignScore = (await searchIGNScore(data.slug)).results.bindings[0];
 	});
 
 </script>
@@ -78,9 +73,9 @@
 					{game.modes.value}
 				</InfoPageTableEntry>
 			{/if}
-			{#if ignScore}
+			{#if game.IGN}
 				<InfoPageTableEntry title="IGN score">
-					{ignScore.IGN.value}
+					{game.IGN.value}
 				</InfoPageTableEntry>
 			{/if}
 		</ul>
