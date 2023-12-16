@@ -1,12 +1,10 @@
 <script lang="ts">
-	import InfoPage from '$lib/components/InfoPage.svelte';
 	import ListBox, { type ListBoxDataType } from '$lib/components/ListBox.svelte';
 	import SearchBar from '$lib/components/SearchBar.svelte';
 	import { ValueContainsFilter, searchGameSuggestions, searchGames, searchImage, searchPublisherSuggestions, searchPublishers } from '$lib/requests';
 	import type { Snapshot } from './$types';
 	import inView from '$lib/inView';
 	import { Spinner } from 'flowbite-svelte';
-	import InfoPageTableEntry from '$lib/components/InfoPageTableEntry.svelte';
 
 	let search = '';
 
@@ -16,7 +14,7 @@
 
 	let sort: "wikipagelength" | "date";
 
-    let type: string;
+    let type: "games" | "publishers";
 
 	let loadedAll = false;
 
@@ -116,7 +114,7 @@
 </p>
 <form>
 	<div class="flex max-w-3xl m-auto rounded-lg overflow-hidden">       
-		<select class="bg-blue-500 px-5 text-white" bind:value={type} on:change={()=>{data=null;}}>
+		<select class="bg-blue-700 px-5 text-white" bind:value={type} on:change={()=>{data=null;}}>
 			<option value="games">Games</option>
 			<option value="publishers">Publishers</option>
 		</select>
@@ -124,9 +122,9 @@
 		<SearchBar getSuggestions={loadSuggestions} onSearch={searchQuery} placeholder="search for {type}" bind:search></SearchBar>
 	</div>
 	{#if type == "games"}
-		<div class="flex max-w-3xl mx-auto justify-center my-10 items-center">
+		<div class="flex max-w-3xl mx-auto justify-center my-10 items-center space-x-2">
 			<label for="sort-select">Sort by</label>
-			<select class="dark:bg-blue-900 p-2 rounded-lg" id="sort-select" bind:value={sort} on:change={async () => await searchQuery(search)}>
+			<select class="dark:bg-blue-900 bg-blue-700 p-2 rounded-lg text-white" id="sort-select" bind:value={sort} on:change={async () => await searchQuery(search)}>
 				<option value="wikipagelength">Popularity</option>
 				<option value="date">Release Date</option>
 			</select>
