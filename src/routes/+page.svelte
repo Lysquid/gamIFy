@@ -30,25 +30,17 @@
 		error = false;
         data = null;
 		loadedAll = false;
+		let res;
         if (type==="games") {
-		    const res = await getGamesData(search);
-			if (!res) {
-				error = true;
-			} else {
-				data = res;
-			}
-        } else if (type==="publishers") {
-            const res = (await searchPublishers([new ValueContainsFilter('publisherlabel', search)]))?.results.bindings
-			if (!res) {
-				error = true;
-			} else {
-	            data = await Promise.all(res.map(async (el: any): Promise<ListBoxDataType> => { return {
-	                url: `/publisher/${encodeURIComponent(el.publisher.value.split('/').slice(-1))}`,
-	                title: el.publisherlabel.value,
-	                image: el.image ? await searchImage(el.image.value) : undefined,
-	            }}));
-			}
-        }
+		    res = await getGamesData(search);
+		} else if (type==="publishers") {
+			res = await getPublishersData(search);
+		}
+		if (!res) {
+			error = true;
+		} else {
+			data = res;
+		}
 	}
 
 	async function getGamesData(search: string) : Promise<ListBoxDataType[] | undefined> {
@@ -64,6 +56,22 @@
                     title: el.gamelabel.value,
                     description: el.publisherlabel.value != "" ? `Published by : <strong>${el.publisherlabel.value}</strong>`: undefined,
                     image: el.image ? await searchImage(el.image.value) : undefined,
+            }}));
+		}
+	}
+
+	async function getPublishersData(search: string) : Promise<ListBoxDataType[] | undefined> {
+        const res = (await searchPublishers([new ValueContainsFilter('publisherlabel', search)], page_length, offset))?.results.bindings
+		if (res.length < page_length) {
+			loadedAll = true;
+		}
+		if (!res) {
+			return undefined;
+		} else {
+            return await Promise.all(res.map(async (el: any): Promise<ListBoxDataType> => { return {
+                url: `/publisher/${encodeURIComponent(el.publisher.value.split('/').slice(-1))}`,
+                title: el.publisherlabel.value,
+                image: el.image ? await searchImage(el.image.value) : undefined,
             }}));
 		}
 	}
@@ -84,9 +92,14 @@
 		loadingMore = true;
 		offset += page_length;
 		if(data) {
-			console.log(await getGamesData(search));
-			data = data.concat(await getGamesData(search) || []);
-			console.log(data);
+			// console.log(await getGamesData(search));
+			// data = data.concat(await getGamesData(search) || []);
+			// console.log(data);
+	        if (type==="games") {
+			    data = data.concat(await getGamesData(search) || []);
+			} else if (type==="publishers") {
+				data = data.concat(await getPublishersData(search) || []);
+			}
 		}
 		loadingMore = false;
 		// data = data;
@@ -103,20 +116,22 @@
 </p>
 <form>
 	<div class="flex max-w-3xl m-auto rounded-lg overflow-hidden">       
-		<select class="bg-blue-500 px-5 text-white" bind:value={type}>
+		<select class="bg-blue-500 px-5 text-white" bind:value={type} on:change={()=>{data=null;}}>
 			<option value="games">Games</option>
 			<option value="publishers">Publishers</option>
 		</select>
 		
 		<SearchBar getSuggestions={loadSuggestions} onSearch={searchQuery} placeholder="search for {type}" bind:search></SearchBar>
 	</div>
-	<div class="flex max-w-3xl mx-auto justify-center my-10 items-center">
-		<label for="sort-select">Sort by</label>
-		<select class="dark:bg-blue-900 ms-1 p-2 rounded-lg" id="sort-select" bind:value={sort} on:change={async () => await searchQuery(search)}>
-			<option value="wikipagelength">Popularity</option>
-			<option value="date">Release Date</option>
-		</select>
-	</div>
+	{#if type == "games"}
+		<div class="flex max-w-3xl mx-auto justify-center my-10 items-center">
+			<label for="sort-select">Sort by</label>
+			<select class="dark:bg-blue-900 p-2 rounded-lg" id="sort-select" bind:value={sort} on:change={async () => await searchQuery(search)}>
+				<option value="wikipagelength">Popularity</option>
+				<option value="date">Release Date</option>
+			</select>
+		</div>
+	{/if}
 </form>
 
 {#if error}

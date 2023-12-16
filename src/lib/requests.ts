@@ -23,7 +23,7 @@ export class ValueContainsFilter implements Filter {
 export async function searchGames(filters: Filter[], orderby: "wikipagelength" | "date", length: number, offset: number): Promise<any> {
     let filter_lines = filters.map(filter => filter.getFilterLine()).join("");
 
-    let query = `SELECT DISTINCT ?game ?gamelabel ?image (MIN(?releaseDate) as ?date) (GROUP_CONCAT(?publisherlabels; separator = ", ") as ?publisherlabel) WHERE {
+    let query = `SELECT DISTINCT ?game ?gamelabel ?image (MIN(?releaseDate) as ?date) (GROUP_CONCAT(distinct ?publisherlabels; separator = ", ") as ?publisherlabel) WHERE {
 ?game a dbo:VideoGame.
 OPTIONAL {?game dbo:thumbnail ?image.}
 OPTIONAL {?game dbo:publisher ?publisher.
@@ -44,7 +44,7 @@ offset ${offset}`;
     return executeQuery(query);
 }
 
-export async function searchPublishers(filters: Filter[]): Promise<any> {
+export async function searchPublishers(filters: Filter[], length: number, offset: number): Promise<any> {
     let filter_lines = filters.map(filter => filter.getFilterLine()).join("");
 
     let query = `SELECT ?publisher ?publisherlabel ?image (count(?published) as ?nbpublished) WHERE {
@@ -57,6 +57,8 @@ ${filter_lines}
 ?published a dbo:VideoGame.
 }
 ORDER BY DESC (?nbpublished)
+limit ${length}
+offset ${offset}
 `
     return executeQuery(query);
 }
