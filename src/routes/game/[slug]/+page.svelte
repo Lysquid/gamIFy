@@ -63,6 +63,21 @@
 					{game.gameEngine.value}
 				</InfoPageTableEntry>
 			{/if}
+			{#if game.series}
+				<InfoPageTableEntry title="Series">
+					{game.series.value}
+				</InfoPageTableEntry>
+			{/if}
+			{#if game.modes}
+				<InfoPageTableEntry title="Modes">
+					{game.modes.value}
+				</InfoPageTableEntry>
+			{/if}
+			{#if game.series}
+				<InfoPageTableEntry title="IGN score">
+					TODO
+				</InfoPageTableEntry>
+			{/if}
 		</ul>
 
 

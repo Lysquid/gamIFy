@@ -109,13 +109,21 @@ export async function searchImage(originalUri: string): Promise<string | undefin
 
 export async function searchGameInfos(game: string): Promise<any> {
     return executeQuery(`
-        SELECT ?label ?image ?description MIN(?date) as ?date ?gameEngine WHERE {
+        SELECT 
+            ?label
+            ?image
+            ?description
+            MIN(?date) as ?date
+            group_concat(distinct ?gameEngine; separator=", ") as ?gameEngines
+            group_concat(distinct ?oneSeries; separator=", ") as ?series
+            group_concat(distinct ?mode; separator=", ") as ?modes
+        WHERE {
             BIND(<http://dbpedia.org/resource/${game}> AS ?game).
             ?game rdfs:label ?label.
             OPTIONAL {?game dbo:thumbnail ?image.}
             OPTIONAL {?game dbo:releaseDate ?date.}
             OPTIONAL {
-                ?game dbo:abstract ?description.
+                ?game rdfs:comment ?description.
                 FILTER(lang(?description) = "en").
             }
             OPTIONAL {
@@ -123,8 +131,24 @@ export async function searchGameInfos(game: string): Promise<any> {
                 ?gameEngineUri rdfs:label ?gameEngine.
                 FILTER(lang(?gameEngine) = "en").
             }
+            OPTIONAL {
+                ?game dbo:series ?oneSeriesUri.
+                ?oneSeriesUri rdfs:label ?oneSeries.
+                FILTER(lang(?oneSeries) = "en").
+            }
+            OPTIONAL {
+                ?game dbo:series ?seriesUri.
+                ?seriesUri rdfs:label ?series.
+                FILTER(lang(?series) = "en").
+            }
+            OPTIONAL {
+                ?game dbp:modes ?modeUri.
+                ?modeUri rdfs:label ?mode.
+                FILTER(lang(?mode) = "en"). 
+            }
             FILTER(lang(?label) = "en").
         }
+        GROUP BY ?label ?image ?description ?date
         LIMIT 1
     `);
 }
@@ -135,9 +159,12 @@ export async function searchGameDetail(detail: string, game: string): Promise<an
             BIND(<http://dbpedia.org/resource/${game}> AS ?game).
             ?game dbo:${detail} ?uri.
             ?uri rdfs:label ?label.
+            ?uri dbo:wikiPageLength ?wikipagelength.
             FILTER(lang(?label) = "en").
             OPTIONAL {?uri dbo:thumbnail ?image.}
         }
+        ORDER BY DESC(?wikipagelength)
+        LIMIT 5
     `);
 }
 
