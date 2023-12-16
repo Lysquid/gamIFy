@@ -20,23 +20,26 @@ export class ValueContainsFilter implements Filter {
     }
 }
 
-export async function searchGames(filters: Filter[]): Promise<any> {
+export async function searchGames(filters: Filter[], orderby: "wikipagelength" | "date", length: number, offset: number): Promise<any> {
     let filter_lines = filters.map(filter => filter.getFilterLine()).join("");
 
-    let query = `SELECT DISTINCT ?game ?gamelabel ?image (GROUP_CONCAT(?publisherlabels; separator = ", ") as ?publisherlabel) WHERE {
+    let query = `SELECT DISTINCT ?game ?gamelabel ?image (MIN(?releaseDate) as ?date) (GROUP_CONCAT(?publisherlabels; separator = ", ") as ?publisherlabel) WHERE {
 ?game a dbo:VideoGame.
 OPTIONAL {?game dbo:thumbnail ?image.}
 OPTIONAL {?game dbo:publisher ?publisher.
 ?publisher rdfs:label ?publisherlabels.
 FILTER(lang(?publisherlabels) = "en").}
+OPTIONAL {?game dbo:releaseDate ?trueDate}
+bind(coalesce(?trueDate, 0) as ?releaseDate).
 ?game rdfs:label ?gamelabel.
 ?game dbo:wikiPageLength ?wikipagelength.
 FILTER(lang(?gamelabel) = "en").
 ${filter_lines}
 }
 GROUP BY ?game ?gamelabel ?image ?wikipagelength
-ORDER BY DESC(?wikipagelength)
-limit 100`;
+ORDER BY DESC(?${orderby})
+limit ${length}
+offset ${offset}`;
 
     return executeQuery(query);
 }
@@ -46,7 +49,7 @@ export async function searchPublishers(filters: Filter[]): Promise<any> {
 
     let query = `SELECT ?publisher ?publisherlabel ?image (count(?published) as ?nbpublished) WHERE {
 ?publisher a dbo:Company.
-?publisher dbo:thumbnail ?image.
+OPTIONAL{?publisher dbo:thumbnail ?image.}
 ?publisher rdfs:label ?publisherlabel.
 FILTER(lang(?publisherlabel) = "en").
 ${filter_lines}
