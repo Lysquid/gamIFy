@@ -66,34 +66,44 @@
 		</ul>
 
 
-		<div slot="content">
-			{#if platforms}
-				<h1 class="text-3xl mt-10">Platforms</h1>
-				{#each platforms as platform}
-					<SmallListBox name={platform.label.value} type="platform" uri={platform.uri.value} image={platform.image?.value}/>
-				{/each}
-			{/if}
-		
-			{#if genres}
-				<h1 class="text-3xl mt-10">Genre</h1>
-				{#each genres as genre}
-					<SmallListBox name={genre.label.value} type="genre" uri={genre.uri.value} image={genre.image?.value}/>
-				{/each}
-			{/if}
-		
+		<div slot="content" class="grid xl:grid-cols-2 gap-x-8 gap-y-8 mt-10">
+
 			{#if publishers}
-				<h1 class="text-3xl mt-10">Publishers</h1>
-				{#each publishers as publisher}
-					<SmallListBox name={publisher.label.value} type="publisher" uri={publisher.uri.value} image={publisher.image?.value}/>
-				{/each}
+				<div>
+					<h1 class="text-3xl">Publishers</h1>
+					{#each publishers as publisher}
+						<SmallListBox name={publisher.label.value} type="publisher" uri={publisher.uri.value} image={publisher.image?.value}/>
+					{/each}
+				</div>
 			{/if}
 
 			{#if developers}
-			<h1 class="text-3xl mt-10">Developers</h1>
-				{#each developers as developer}
-					<SmallListBox name={developer.label.value} type="publisher" uri={developer.uri.value} image={developer.image?.value}/>
-				{/each}
-		{/if}
+				<div>
+					<h1 class="text-3xl">Developers</h1>
+					{#each developers as developer}
+						<SmallListBox name={developer.label.value} type="publisher" uri={developer.uri.value} image={developer.image?.value}/>
+					{/each}
+				</div>
+			{/if}
+
+			{#if genres}
+				<div>
+					<h1 class="text-3xl">Genres</h1>
+					{#each genres as genre}
+						<SmallListBox name={genre.label.value} type="genre" uri={genre.uri.value} image={genre.image?.value}/>
+					{/each}
+				</div>
+			{/if}
+
+			{#if platforms}
+				<div>
+					<h1 class="text-3xl">Platforms</h1>
+					{#each platforms as platform}
+						<SmallListBox name={platform.label.value} type="platform" uri={platform.uri.value} image={platform.image?.value}/>
+					{/each}
+				</div>
+			{/if}
+		
 		</div>
 	</InfoPage>
 {:else}
