@@ -14,7 +14,7 @@
 
 	let sort: "wikipagelength" | "date";
 
-    let type: "games" | "publishers";
+    let type: "games" | "publishers" | "IGN";
 
 	let loadedAll = false;
 
@@ -43,35 +43,39 @@
 
 	async function getGamesData(search: string) : Promise<ListBoxDataType[] | undefined> {
 	    const res = (await searchGames([new ValueContainsFilter('gamelabel', search)], sort, page_length, offset))?.results.bindings;
-		if (res.length < page_length) {
-			loadedAll = true;
-		}
+		let result;
 		if (!res) {
-			return undefined;
+			result = undefined;
 		} else {
-            return await Promise.all(res.map(async (el: any): Promise<ListBoxDataType> => { return {
+            result = await Promise.all(res.map(async (el: any): Promise<ListBoxDataType> => { return {
                     url: `/game/${encodeURIComponent(el.game.value.split('/').slice(-1))}`, 
                     title: el.gamelabel.value,
                     description: el.publisherlabel.value != "" ? `Published by : <strong>${el.publisherlabel.value}</strong>`: undefined,
                     image: el.image ? await searchImage(el.image.value) : undefined,
             }}));
 		}
+		if (res.length < page_length) {
+			loadedAll = true;
+		}
+		return result;
 	}
 
 	async function getPublishersData(search: string) : Promise<ListBoxDataType[] | undefined> {
         const res = (await searchPublishers([new ValueContainsFilter('publisherlabel', search)], page_length, offset))?.results.bindings
-		if (res.length < page_length) {
-			loadedAll = true;
-		}
+		let result;
 		if (!res) {
-			return undefined;
+			result = undefined;
 		} else {
-            return await Promise.all(res.map(async (el: any): Promise<ListBoxDataType> => { return {
+            result = await Promise.all(res.map(async (el: any): Promise<ListBoxDataType> => { return {
                 url: `/publisher/${encodeURIComponent(el.publisher.value.split('/').slice(-1))}`,
                 title: el.publisherlabel.value,
                 image: el.image ? await searchImage(el.image.value) : undefined,
             }}));
 		}
+		if (res.length < page_length) {
+			loadedAll = true;
+		}
+		return result;
 	}
 
 	async function loadSuggestions(search: string): Promise<string[]> {
@@ -127,6 +131,7 @@
 			<select class="dark:bg-blue-900 bg-blue-700 p-2 rounded-lg text-white" id="sort-select" bind:value={sort} on:change={async () => await searchQuery(search)}>
 				<option value="wikipagelength">Popularity</option>
 				<option value="date">Release Date</option>
+				<option value="IGN">IGN Score</option>
 			</select>
 		</div>
 	{/if}
@@ -138,7 +143,9 @@
 	<ListBox data={data}></ListBox>
 	<!-- <button on:click={loadMore}>Load More</button> -->
 	{#if !loadedAll}
-		<p use:inView on:enter={async () => {console.log(loadedAll); await loadMore()}}></p>
+		<p use:inView on:enter={loadMore}></p>
+	{:else }
+		<p class="text-center dark:text-gray-500 text-gray-300 p-5">No more results</p>
 	{/if}
 	{#if loadingMore}
 		<div class="flex w-full justify-center mt-5">

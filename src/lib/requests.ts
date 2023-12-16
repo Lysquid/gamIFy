@@ -20,7 +20,7 @@ export class ValueContainsFilter implements Filter {
     }
 }
 
-export async function searchGames(filters: Filter[], orderby: "wikipagelength" | "date", length: number, offset: number): Promise<any> {
+export async function searchGames(filters: Filter[], orderby: "wikipagelength" | "date" | "IGN", length: number, offset: number): Promise<any> {
     let filter_lines = filters.map(filter => filter.getFilterLine()).join("");
 
     return executeQuery(`
