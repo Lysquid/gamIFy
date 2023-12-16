@@ -170,6 +170,29 @@ export async function searchGameDetail(detail: string, game: string): Promise<an
     `);
 }
 
+export async function searchIGNScore(game: string): Promise<any> {
+    return executeQuery(`
+        SELECT 
+            SUM(?IGN)/COUNT(?IGN) as ?IGN
+        WHERE {
+            {       
+                BIND(<http://dbpedia.org/resource/${game}> AS ?game).
+                ?game dbp:ign ?IGN.
+                FILTER(?IGN<=10).
+            }
+            UNION
+            { 
+                BIND(<http://dbpedia.org/resource/${game}> AS ?game).
+                ?game dbp:ign ?hundred.
+                FILTER(?hundred>10).
+                FILTER(?hundred<=100). 
+                BIND((?hundred/10.0) AS ?IGN).
+            }
+        }
+        LIMIT 1
+    `);
+}
+
 export async function searchPublisherInfo(publisher: string): Promise<any> {
 
     let query = `
