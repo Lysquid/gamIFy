@@ -23,25 +23,50 @@ export class ValueContainsFilter implements Filter {
 export async function searchGames(filters: Filter[], orderby: "wikipagelength" | "date", length: number, offset: number): Promise<any> {
     let filter_lines = filters.map(filter => filter.getFilterLine()).join("");
 
-    let query = `SELECT DISTINCT ?game ?gamelabel ?image (MIN(?releaseDate) as ?date) (GROUP_CONCAT(distinct ?publisherlabels; separator = ", ") as ?publisherlabel) WHERE {
-?game a dbo:VideoGame.
-OPTIONAL {?game dbo:thumbnail ?image.}
-OPTIONAL {?game dbo:publisher ?publisher.
-?publisher rdfs:label ?publisherlabels.
-FILTER(lang(?publisherlabels) = "en").}
-OPTIONAL {?game dbo:releaseDate ?trueDate}
-bind(coalesce(?trueDate, 0) as ?releaseDate).
-?game rdfs:label ?gamelabel.
-?game dbo:wikiPageLength ?wikipagelength.
-FILTER(lang(?gamelabel) = "en").
-${filter_lines}
-}
-GROUP BY ?game ?gamelabel ?image ?wikipagelength
-ORDER BY DESC(?${orderby})
-limit ${length}
-offset ${offset}`;
-
-    return executeQuery(query);
+    return executeQuery(`
+        SELECT DISTINCT
+            ?game
+            ?gamelabel
+            ?image 
+            MIN(?releaseDate) as ?date
+            GROUP_CONCAT(distinct ?publisherlabels; separator = ", ") as ?publisherlabel
+            SUM(?IGN)/COUNT(?IGN) as ?IGN
+        WHERE {
+            ?game a dbo:VideoGame.
+            OPTIONAL {?game dbo:thumbnail ?image.}
+            OPTIONAL {?game dbo:publisher ?publisher.}
+            ?publisher rdfs:label ?publisherlabels.
+            FILTER(lang(?publisherlabels) = "en").
+            OPTIONAL {?game dbo:releaseDate ?trueDate.}
+            BIND(coalesce(?trueDate, 0) as ?releaseDate).
+            ?game rdfs:label ?gamelabel.
+            ?game dbo:wikiPageLength ?wikipagelength.
+            FILTER(lang(?gamelabel) = "en").
+            OPTIONAL {
+                ?game rdfs:comment ?description.
+                FILTER(lang(?description) = "en").
+                FILTER(contains(?description, "game")).
+            }
+            ${filter_lines}
+            OPTIONAL {
+                {
+                    ?game dbp:ign ?IGN.
+                    FILTER(?IGN<=10).
+                }
+                UNION
+                {
+                    ?game dbp:ign ?hundred.
+                    FILTER(?hundred>10).
+                    FILTER(?hundred<=100). 
+                    BIND((?hundred/10.0) AS ?IGN).
+                }
+            }
+        }
+        GROUP BY ?game ?gamelabel ?image ?wikipagelength
+        ORDER BY DESC(?${orderby})
+        LIMIT ${length}
+        OFFSET ${offset}
+    `);
 }
 
 export async function searchPublishers(filters: Filter[], length: number, offset: number): Promise<any> {
@@ -116,9 +141,9 @@ export async function searchGameInfos(game: string): Promise<any> {
             ?image
             ?description
             MIN(?date) as ?date
-            group_concat(distinct ?gameEngine; separator=", ") as ?gameEngines
-            group_concat(distinct ?oneSeries; separator=", ") as ?series
-            group_concat(distinct ?mode; separator=", ") as ?modes
+            GROUP_CONCAT(distinct ?gameEngine; separator=", ") as ?gameEngines
+            GROUP_CONCAT(distinct ?oneSeries; separator=", ") as ?series
+            GROUP_CONCAT(distinct ?mode; separator=", ") as ?modes
             SUM(?IGN)/COUNT(?IGN) as ?IGN
         WHERE {
             BIND(<http://dbpedia.org/resource/${game}> AS ?game).
