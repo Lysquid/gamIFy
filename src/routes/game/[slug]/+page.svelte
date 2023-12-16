@@ -45,12 +45,12 @@
 
 
 {#if loading}
-	<Spinner></Spinner>
+	<Spinner color="blue"></Spinner>
 {:else if game}
 	<InfoPage
-		title={game?.label?.value || ''}
-		description={game?.description?.value || ''}
-		image={game?.image?.value || ''}
+		title={game.label?.value || ''}
+		description={game.description?.value || ''}
+		image={game.image?.value || ''}
 	>
 		<ul slot="info-entry">
 			{#if game.date}
@@ -70,28 +70,28 @@
 			{#if platforms}
 				<h1 class="text-3xl mt-10">Platforms</h1>
 				{#each platforms as platform}
-					<SmallListBox name={platform.label.value} type="platform" uri={platform.uri.value} image={platform.image.value}/>
+					<SmallListBox name={platform.label.value} type="platform" uri={platform.uri.value} image={platform.image?.value}/>
 				{/each}
 			{/if}
 		
 			{#if genres}
 				<h1 class="text-3xl mt-10">Genre</h1>
 				{#each genres as genre}
-					<SmallListBox name={genre.label.value} type="genre" uri={genre.uri.value}/>
+					<SmallListBox name={genre.label.value} type="genre" uri={genre.uri.value} image={genre.image?.value}/>
 				{/each}
 			{/if}
 		
 			{#if publishers}
 				<h1 class="text-3xl mt-10">Publishers</h1>
 				{#each publishers as publisher}
-					<SmallListBox name={publisher.label.value} type="publisher" uri={publisher.uri.value} image={publisher.image.value}/>
+					<SmallListBox name={publisher.label.value} type="publisher" uri={publisher.uri.value} image={publisher.image?.value}/>
 				{/each}
 			{/if}
 
 			{#if developers}
 			<h1 class="text-3xl mt-10">Developers</h1>
 				{#each developers as developer}
-					<SmallListBox name={developer.label.value} type="publisher" uri={developer.uri.value} image={developer.image.value}/>
+					<SmallListBox name={developer.label.value} type="publisher" uri={developer.uri.value} image={developer.image?.value}/>
 				{/each}
 		{/if}
 		</div>
@@ -99,4 +99,3 @@
 {:else}
 	Not found
 {/if}
-

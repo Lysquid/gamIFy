@@ -98,7 +98,7 @@
 	}
 </script>
 
-<p class="text-gray-900 dark:text-white text-center text-2xl my-10">
+<p class="text-gray-900 dark:text-white text-center text-2xl mb-10">
 	The ultimate Video Game search engine !
 </p>
 <form>
@@ -111,8 +111,8 @@
 		<SearchBar getSuggestions={loadSuggestions} onSearch={searchQuery} placeholder="search for {type}" bind:search></SearchBar>
 	</div>
 	<div class="flex max-w-3xl mx-auto justify-center my-10 items-center">
-		<label for="sort-select">Sort by :</label>
-		<select class="dark:bg-blue-900 p-2 rounded-lg" id="sort-select" bind:value={sort} on:change={async () => await searchQuery(search)}>
+		<label for="sort-select">Sort by</label>
+		<select class="dark:bg-blue-900 ms-1 p-2 rounded-lg" id="sort-select" bind:value={sort} on:change={async () => await searchQuery(search)}>
 			<option value="wikipagelength">Popularity</option>
 			<option value="date">Release Date</option>
 		</select>

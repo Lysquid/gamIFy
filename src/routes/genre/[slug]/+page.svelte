@@ -23,28 +23,26 @@
 	});
 </script>
 
-<div class="p-5">
-	{#if loading}
-		<Spinner></Spinner>
-	{:else if genre_data}
-		<InfoPage
-			title={genre_data?.label?.value || ''}
-			description={genre_data?.description?.value || ''}
-			image={genre_data?.image}
-		>
-			<div slot="info-entry">
-				<InfoPageTableEntry title="Game count">
-					<p>{genre_data?.gamecount?.value}</p>
-				</InfoPageTableEntry>
-                {#if genre_data?.createdDate?.value}
-				<InfoPageTableEntry title="Creation date">
-					<p>{genre_data?.createdDate?.value}</p>
-				</InfoPageTableEntry>
+{#if loading}
+	<Spinner color="blue"></Spinner>
+{:else if genre_data}
+	<InfoPage
+		title={genre_data?.label?.value || ''}
+		description={genre_data?.description?.value || ''}
+		image={genre_data?.image}
+	>
+		<div slot="info-entry">
+			<InfoPageTableEntry title="Game count">
+				<p>{genre_data?.gamecount?.value}</p>
+			</InfoPageTableEntry>
+			{#if genre_data?.createdDate?.value}
+			<InfoPageTableEntry title="Creation date">
+				<p>{genre_data?.createdDate?.value}</p>
+			</InfoPageTableEntry>
 
-                {/if}
-			</div>
-		</InfoPage>
-	{:else}
-		Not found
-	{/if}
-</div>
+			{/if}
+		</div>
+	</InfoPage>
+{:else}
+	Not found
+{/if}

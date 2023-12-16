@@ -6,7 +6,7 @@
 </script>
 
 <div class="w-full lg:w-2/3 m-auto flex flex-row justify-between space-x-10">
-	<div class="mr-auto w-2/3 mt-10">
+	<div class="mr-auto w-2/3">
 		<h1 class="text-bold text-5xl mb-10">{title}</h1>
 		<p class="text-justify">{description || ''}</p>
 		<slot name="content"/>
