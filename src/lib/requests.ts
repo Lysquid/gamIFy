@@ -72,53 +72,60 @@ export async function searchGames(filters: Filter[], orderby: "wikipagelength" |
 export async function searchPublishers(filters: Filter[], length: number, offset: number): Promise<any> {
     let filter_lines = filters.map(filter => filter.getFilterLine()).join("");
 
-    let query = `SELECT ?publisher ?publisherlabel ?image (count(?published) as ?nbpublished) WHERE {
-?publisher a dbo:Company.
-OPTIONAL{?publisher dbo:thumbnail ?image.}
-?publisher rdfs:label ?publisherlabel.
-FILTER(lang(?publisherlabel) = "en").
-${filter_lines}
-?published dbo:publisher ?publisher.
-?published a dbo:VideoGame.
-}
-ORDER BY DESC (?nbpublished)
-limit ${length}
-offset ${offset}
-`
-    return executeQuery(query);
+    return executeQuery(`
+        SELECT 
+            ?publisher 
+            ?publisherlabel 
+            ?image 
+            (count(?published) as ?nbpublished) 
+        WHERE {
+            ?publisher a dbo:Company.
+            OPTIONAL{?publisher dbo:thumbnail ?image.}
+            ?publisher rdfs:label ?publisherlabel.
+            FILTER(lang(?publisherlabel) = "en").
+            ${filter_lines}
+            ?published dbo:publisher ?publisher.
+            ?published a dbo:VideoGame.
+        }
+        ORDER BY DESC (?nbpublished)
+        LIMIT ${length}
+        OFFSET ${offset}
+    `);
 }
 
 export async function searchGameSuggestions(filters: Filter[]): Promise<any> {
     let filter_lines = filters.map(filter => filter.getFilterLine()).join("");
-    let query = `SELECT DISTINCT ?gamelabel WHERE {
-?game a dbo:VideoGame.
-?game rdfs:label ?gamelabel.
-?game dbo:wikiPageLength ?wikipagelength.
-FILTER(lang(?gamelabel) = "en").
-${filter_lines}
-}
-GROUP BY ?game ?gamelabel ?wikipagelength
-ORDER BY DESC(?wikipagelength)
-LIMIT 5
-`;
-
-    return executeQuery(query);
+    return executeQuery(`
+        SELECT DISTINCT ?gamelabel WHERE {
+            ?game a dbo:VideoGame.
+            ?game rdfs:label ?gamelabel.
+            ?game dbo:wikiPageLength ?wikipagelength.
+            FILTER(lang(?gamelabel) = "en").
+            ${filter_lines}
+        }
+        GROUP BY ?game ?gamelabel ?wikipagelength
+        ORDER BY DESC(?wikipagelength)
+        LIMIT 5
+    `);
 }
 
 export async function searchPublisherSuggestions(filters: Filter[]): Promise<any> {
     let filter_lines = filters.map(filter => filter.getFilterLine()).join("");
-    let query = `SELECT ?publisherlabel (count(?published) as ?nbpublished) WHERE {
-?publisher a dbo:Company.
-?publisher rdfs:label ?publisherlabel.
-FILTER(lang(?publisherlabel) = "en").
-${filter_lines}
-?published dbo:publisher ?publisher.
-?published a dbo:VideoGame.
-}
-ORDER BY DESC (?nbpublished)
-LIMIT 5
-`;
-    return executeQuery(query);
+    return executeQuery(`
+        SELECT 
+            ?publisherlabel 
+            (count(?published) as ?nbpublished) 
+        WHERE {
+            ?publisher a dbo:Company.
+            ?publisher rdfs:label ?publisherlabel.
+            FILTER(lang(?publisherlabel) = "en").
+            ${filter_lines}
+            ?published dbo:publisher ?publisher.
+            ?published a dbo:VideoGame.
+        }
+        ORDER BY DESC (?nbpublished)
+        LIMIT 5
+    `);
 }
 
 export async function searchImage(originalUri: string): Promise<string | undefined> {
