@@ -128,22 +128,25 @@ export async function searchPublisherSuggestions(filters: Filter[]): Promise<any
     `);
 }
 
-export async function searchGamesByGenre(genreLabel: string): Promise<any> {
+export async function searchGamesByGenre(source: string): Promise<any> {
     return executeQuery(`
         SELECT DISTINCT
             ?game
             ?gamelabel
             ?image 
-            MIN(?releaseDate) as ?date
         WHERE {
+            BIND(<http://dbpedia.org/resource/${source}> AS ?source).
+            ?source dbo:genre ?genre.
             ?game a dbo:VideoGame.
             OPTIONAL {?game dbo:thumbnail ?image.}
             ?game rdfs:label ?gamelabel.
+            FILTER(lang(?gamelabel) = "en").
             ?game dbo:wikiPageLength ?wikipagelength.
             ?game dbo:genre ?genre.
-            ?genre rdfs:label ${genreLabel}.
         }
         GROUP BY ?game ?gamelabel ?image ?wikipagelength
+        ORDER BY DESC (?wikipagelength)
+        LIMIT 5
     `);
 }
 

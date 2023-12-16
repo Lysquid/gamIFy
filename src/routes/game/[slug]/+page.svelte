@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import type { PageData } from './$types';
-	import { searchGameInfos, searchList, searchImage } from '$lib/requests';
+	import { searchGameInfos, searchList, searchImage, searchGamesByGenre } from '$lib/requests';
 	import InfoPage from '$lib/components/InfoPage.svelte';
 	import { Spinner } from 'flowbite-svelte';
 	import InfoPageTableEntry from '$lib/components/InfoPageTableEntry.svelte';
@@ -13,6 +13,7 @@
 	let publishers: null | any;
 	let developers: null | any;
 	let genres: null | any;
+	let games: null | any
 	let loading: boolean = true;
 
 	onMount(async () => {
@@ -39,6 +40,10 @@
 	onMount(async () => {
 		developers = (await searchList("developer", data.slug)).results.bindings;
 	});
+
+	onMount(async () => {
+		games = (await searchGamesByGenre(data.slug)).results.bindings;
+	})
 
 </script>
 
@@ -114,6 +119,15 @@
 					<h1 class="text-3xl">Platforms</h1>
 					{#each platforms as platform}
 						<SmallListBox name={platform.label.value} type="platform" uri={platform.uri.value} image={platform.image?.value}/>
+					{/each}
+				</div>
+			{/if}
+			
+			{#if games?.length}
+				<div>
+					<h1 class="text-3xl">Popular games of the same genre</h1>
+					{#each games as game}
+						<SmallListBox name={game.gamelabel.value} type="game" uri={game.game.value} image={game.image?.value}/>
 					{/each}
 				</div>
 			{/if}
