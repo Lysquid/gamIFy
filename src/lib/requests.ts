@@ -128,6 +128,25 @@ export async function searchPublisherSuggestions(filters: Filter[]): Promise<any
     `);
 }
 
+export async function searchGamesByGenre(genreLabel: string): Promise<any> {
+    return executeQuery(`
+        SELECT DISTINCT
+            ?game
+            ?gamelabel
+            ?image 
+            MIN(?releaseDate) as ?date
+        WHERE {
+            ?game a dbo:VideoGame.
+            OPTIONAL {?game dbo:thumbnail ?image.}
+            ?game rdfs:label ?gamelabel.
+            ?game dbo:wikiPageLength ?wikipagelength.
+            ?game dbo:genre ?genre.
+            ?genre rdfs:label ${genreLabel}.
+        }
+        GROUP BY ?game ?gamelabel ?image ?wikipagelength
+    `);
+}
+
 export async function searchImage(originalUri: string): Promise<string | undefined> {
     let urlParts = originalUri.split("/");
     let last = urlParts[urlParts.length - 1];
