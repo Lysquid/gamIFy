@@ -2,7 +2,7 @@ import { executeQuery } from "$lib";
 
 type FilterAttribute = "gamelabel" | "publisherlabel";
 
-interface Filter {
+export interface Filter {
     getFilterLine(): string;
 }
 

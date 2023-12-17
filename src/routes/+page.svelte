@@ -1,7 +1,7 @@
 <script lang="ts">
 	import ListBox, { type ListBoxDataType } from '$lib/components/ListBox.svelte';
 	import SearchBar from '$lib/components/SearchBar.svelte';
-	import { ValueContainsFilter, searchGameSuggestions, searchGames, searchImage, searchPublisherSuggestions, searchPublishers } from '$lib/requests';
+	import { ValueContainsFilter, searchGameSuggestions, searchGames, searchImage, searchPublisherSuggestions, searchPublishers, type Filter } from '$lib/requests';
 	import type { Snapshot } from './$types';
 	import inView from '$lib/inView';
 	import { Spinner } from 'flowbite-svelte';
@@ -42,7 +42,11 @@
 	}
 
 	async function getGamesData(search: string) : Promise<ListBoxDataType[] | undefined> {
-	    const res = (await searchGames([new ValueContainsFilter('gamelabel', search)], sort, page_length, offset))?.results.bindings;
+		let filters: Filter[] = [];
+		if (search) {
+			filters.push(new ValueContainsFilter('gamelabel', search));
+		}
+	    const res = (await searchGames(filters, sort, page_length, offset))?.results.bindings;
 		let result;
 		if (!res) {
 			result = undefined;
@@ -61,7 +65,11 @@
 	}
 
 	async function getPublishersData(search: string) : Promise<ListBoxDataType[] | undefined> {
-        const res = (await searchPublishers([new ValueContainsFilter('publisherlabel', search)], page_length, offset))?.results.bindings
+		let filters: Filter[] = [];
+		if (search) {
+			filters.push(new ValueContainsFilter('publisherlabel', search));
+		}
+        const res = (await searchPublishers(filters, page_length, offset))?.results.bindings
 		let result;
 		if (!res) {
 			result = undefined;
