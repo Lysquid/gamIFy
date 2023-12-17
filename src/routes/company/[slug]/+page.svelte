@@ -30,8 +30,8 @@
 			<InfoPageTableEntry title="Founder" value={publisher.founderName?.value}/>
 			<InfoPageTableEntry title="Founders" value={publisher.foundersPeople?.value.split("|")}/>
 			<InfoPageTableEntry title="Key people" value={publisher.keyPeople?.value.split("|")}/>
-			<InfoPageTableEntry title="Headquarters" value={publisher.citylabel?.value}/>
-			<InfoPageTableEntry title="Number of employees" value={publisher.emp?.value}/>
+			<InfoPageTableEntry title="Headquarters" value={publisher.city?.value}/>
+			<InfoPageTableEntry title="Number of employees" value={publisher.numberOfEmployees?.value}/>
 			<InfoPageTableEntry title="Website" value={publisher.homepage?.value} url={publisher.homepage?.value}/>
 		</div>
 

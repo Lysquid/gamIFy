@@ -14,7 +14,7 @@
 	onMount(async () => {
 		platform = searchPlatformInfos(data.slug);
 		let filters = [new AttributeFilter("computingPlatform", data.slug)];
-		games = searchGames(filters, "IGN", 10, 0);
+		games = searchGames(filters, "wikiPageLength", 10, 0);
 	});
 
 </script>

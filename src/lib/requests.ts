@@ -291,13 +291,13 @@ export async function searchPublisherInfo(publisher: string): Promise<any> {
         SELECT
             ?label
             ?description
-            ?emp
+            ?numberOfEmployees
             ?homepage
             ?image
-            ?citylabel
+            ?city
             ?foundingDate
             ?founderName
-            GROUP_CONCAT(DISTINCT ?people; SEPARATOR=" | ") as ?keyPeople
+            GROUP_CONCAT(DISTINCT ?keyPerson; SEPARATOR="|") as ?keyPeople
         WHERE {
             BIND(<http://dbpedia.org/resource/${publisher}> AS ?publisher).
             ?publisher rdfs:label ?label.
@@ -306,15 +306,19 @@ export async function searchPublisherInfo(publisher: string): Promise<any> {
                 ?publisher rdfs:comment ?description.
                 FILTER(lang(?description) = "en")
             }.
-            OPTIONAL {?publisher dbo:numberOfEmployees ?emp.}.
+            OPTIONAL {?publisher dbo:numberOfEmployees ?numberOfEmployees.}.
             OPTIONAL {?publisher foaf:homepage ?homepage.}.
             OPTIONAL {?publisher dbo:thumbnail ?image.}.
             OPTIONAL {
-                ?publisher dbo:locationCity ?city.
-                ?city rdfs:label ?citylabel.
-                FILTER(lang(?citylabel) = "en").
+                ?publisher dbo:locationCity ?cityUri.
+                ?cityUri rdfs:label ?city.
+                FILTER(lang(?city) = "en").
             }.
-            OPTIONAL {?publisher dbp:keyPeople ?people.}
+            OPTIONAL {
+                ?publisher dbp:keyPeople ?keyPeopleUri.
+                ?keyPeopleUri rdfs:label ?keyPerson.
+                FILTER(lang(?keyPerson) = "en").
+            }
             OPTIONAL {?publisher dbo:foundingDate ?foundingDate.}
             OPTIONAL {
                 ?publisher dbp:founder ?founder.
@@ -323,7 +327,7 @@ export async function searchPublisherInfo(publisher: string): Promise<any> {
             ?game dbo:publisher ?publisher.
             ?game a dbo:VideoGame.
         }
-        GROUP BY ?label ?description ?emp ?homepage ?image ?citylabel ?foundingDate ?founderName
+        GROUP BY ?label ?description ?numberOfEmployees ?homepage ?image ?city ?foundingDate ?founderName
         LIMIT 1
     `, true);
 }

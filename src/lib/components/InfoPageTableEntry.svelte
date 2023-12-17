@@ -3,9 +3,10 @@
 	export let title: string;
 	export let value: string|string[];
 	export let url: string|null = null;
+	console.log(value)
 </script>
 
-{#if value}
+{#if value && (typeof value === "string" || value[0].length > 0)}
 	<tr>
 		<td class="ps-5 pe-3 py-3"><strong>{title}</strong></td>
 		<td class="pe-5 py-3">
