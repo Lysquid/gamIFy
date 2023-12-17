@@ -5,7 +5,7 @@
 
     export var filter: AttributeFilter;
 	let games: Promise<any>;
-    let sort: string = "wikiPageLength";
+    let sort: "wikiPageLength" | "date" | "IGN" = "wikiPageLength";
     search();
     
     async function search() {
