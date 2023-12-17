@@ -14,7 +14,7 @@
 
 	let sort: "wikiPageLength" | "date";
 
-    let type: "games" | "publishers" | "IGN";
+    let type: "game" | "company";
 
 	let loadedAll = false;
 
@@ -29,9 +29,9 @@
         data = null;
 		loadedAll = false;
 		let res;
-        if (type==="games") {
+        if (type==="game") {
 		    res = await getGamesData(search);
-		} else if (type==="publishers") {
+		} else if (type==="company") {
 			res = await getPublishersData(search);
 		}
 		if (!res) {
@@ -88,9 +88,9 @@
 
 	async function loadSuggestions(search: string): Promise<string[]> {
 		let res;
-		if(type==="games") {
+		if(type==="game") {
 			res = (await searchGameSuggestions(search));
-		} else if (type==="publishers") {
+		} else if (type==="company") {
 			res = (await searchPublisherSuggestions(search));
 		}
 		return res.map((el: any) => el.label.value);
@@ -103,9 +103,9 @@
 			// console.log(await getGamesData(search));
 			// data = data.concat(await getGamesData(search) || []);
 			// console.log(data);
-	        if (type==="games") {
+	        if (type==="game") {
 			    data = data.concat(await getGamesData(search) || []);
-			} else if (type==="publishers") {
+			} else if (type==="company") {
 				data = data.concat(await getPublishersData(search) || []);
 			}
 		}
@@ -125,13 +125,13 @@
 <form>
 	<div class="flex max-w-3xl m-auto rounded-lg overflow-hidden">       
 		<select class="bg-blue-700 px-5 text-white" bind:value={type} on:change={()=>{data=null;}}>
-			<option value="games">Games</option>
-			<option value="publishers">Publishers</option>
+			<option value="game">Games</option>
+			<option value="company">Publishers</option>
 		</select>
 		
-		<SearchBar getSuggestions={loadSuggestions} onSearch={searchQuery} placeholder="search for {type}" bind:search></SearchBar>
+		<SearchBar getSuggestions={loadSuggestions} onSearch={searchQuery} placeholder="search for a {type}" bind:search></SearchBar>
 	</div>
-	{#if type == "games"}
+	{#if type == "game"}
 		<div class="flex max-w-3xl mx-auto justify-center my-10 items-center space-x-2">
 			<label for="sort-select">Sort by</label>
 			<select class="dark:bg-blue-900 bg-blue-700 p-2 rounded-lg text-white" id="sort-select" bind:value={sort} on:change={async () => await searchQuery(search)}>
@@ -148,7 +148,7 @@
 {:else if data && data.length != 0}
 	<div class="flex flex-col mx-50 gap-5 mt-10 items-center">
 		{#each data as item}
-			<ListBox title={item.title} description={item.description} image={item.image} uri={item.uri} type="game"></ListBox>
+			<ListBox title={item.title} description={item.description} image={item.image} uri={item.uri} type={type}></ListBox>
 		{/each}
 	</div>
 	<!-- <button on:click={loadMore}>Load More</button> -->
