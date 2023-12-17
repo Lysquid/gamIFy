@@ -1,4 +1,4 @@
-import { executeQuery } from "$lib";
+import { executeQuery, executeQuerySingleResult } from "$lib";
 
 type FilterAttribute = "label";
 
@@ -204,7 +204,7 @@ export async function searchImage(originalUri: string): Promise<string | undefin
 }
 
 export async function searchGameInfos(game: string): Promise<any> {
-    return executeQuery(`
+    return executeQuerySingleResult(`
         SELECT 
             ?label
             ?image

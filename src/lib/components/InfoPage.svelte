@@ -1,8 +1,16 @@
 <script lang="ts">
+	import { searchImage } from "$lib/requests";
+	import { onMount } from "svelte";
+
 	export let title: string;
-	export let description: string = '';
-	export let image: string = '';
-	console.log($$slots);
+	export let description: string;
+	export let image: string|undefined;
+	
+	onMount(async () => {
+        if (image) {
+            image = await searchImage(image);
+        }
+	});
 </script>
 
 <div class="w-full lg:w-2/3 m-auto flex flex-row justify-between space-x-10">
