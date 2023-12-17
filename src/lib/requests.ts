@@ -150,6 +150,26 @@ export async function searchGamesByGenre(source: string): Promise<any> {
     `);
 }
 
+export async function searchGamesByGenreURI(genre: string): Promise<any> {
+    return executeQuery(`
+        SELECT DISTINCT
+            ?game
+            ?gamelabel
+            ?image 
+        WHERE {
+            BIND(<http://dbpedia.org/resource/${genre}> AS ?genre).
+            ?genre ^dbo:genre ?game.
+            ?game a dbo:VideoGame.
+            OPTIONAL {?game dbo:thumbnail ?image.}
+            ?game rdfs:label ?gamelabel.
+            FILTER(lang(?gamelabel) = "en").
+            ?game dbo:wikiPageLength ?wikipagelength.
+        }
+        GROUP BY ?game ?gamelabel ?image ?wikipagelength
+        ORDER BY DESC (?wikipagelength)
+        LIMIT 5
+    `);
+}
 export async function searchImage(originalUri: string): Promise<string | undefined> {
     let urlParts = originalUri.split("/");
     let last = urlParts[urlParts.length - 1];

@@ -1,14 +1,16 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import type { PageData } from './$types';
-	import { searchImage, searchGenreInfo } from '$lib/requests';
+	import { searchImage, searchGenreInfo, searchGamesByGenreURI } from '$lib/requests';
 	import { Spinner } from 'flowbite-svelte';
 	import InfoPage from '$lib/components/InfoPage.svelte';
 	import InfoPageTableEntry from '$lib/components/InfoPageTableEntry.svelte';
+	import SmallListBox from '$lib/components/SmallListBox.svelte';
 
 	export let data: PageData;
 	let loading = true;
 	let genre_data: any = null;
+	let games: null | any;
 
 	onMount(async () => {
 		loading = true;
@@ -20,6 +22,11 @@
 		}
 
 		loading = false;
+	});
+
+	onMount(async () => {
+		games = (await searchGamesByGenreURI(data.slug)).results.bindings;
+        console.log(games);
 	});
 </script>
 
@@ -36,10 +43,24 @@
 				<p>{genre_data?.gamecount?.value}</p>
 			</InfoPageTableEntry>
 			{#if genre_data?.createdDate?.value}
-			<InfoPageTableEntry title="Creation date">
-				<p>{genre_data?.createdDate?.value}</p>
-			</InfoPageTableEntry>
-
+				<InfoPageTableEntry title="Creation date">
+					<p>{genre_data?.createdDate?.value}</p>
+				</InfoPageTableEntry>
+			{/if}
+		</div>
+		<div slot="content" class="mt-10">
+			{#if games?.length}
+				<div>
+					<h1 class="text-3xl">Popular games of this genre</h1>
+					{#each games as game}
+						<SmallListBox
+							name={game.gamelabel.value}
+							type="game"
+							uri={game.game.value}
+							image={game.image?.value}
+						/>
+					{/each}
+				</div>
 			{/if}
 		</div>
 	</InfoPage>
