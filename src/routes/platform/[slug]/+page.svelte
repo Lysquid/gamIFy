@@ -14,7 +14,7 @@
 
 	onMount(async () => {
 		const results = await searchPlatformInfos(data.slug);
-		platform = results.results.bindings[0];
+		platform = results[0];
 		if (platform.image) {
 			platform.image.value = await searchImage(platform.image.value);
 		}
@@ -23,7 +23,7 @@
 
 	onMount(async () => {
 		let filters = [new AttributeFilter("computingPlatform", data.slug)];
-		games = (await searchGames(filters, "IGN", 10, 0))?.results.bindings;
+		games = (await searchGames(filters, "IGN", 10, 0));
 	});
 
 </script>

@@ -151,20 +151,20 @@ export async function searchPublisherSuggestions(search: string): Promise<any> {
 export async function searchGamesByGenre(source: string): Promise<any> {
     return executeQuery(`
         SELECT DISTINCT
-            ?game
-            ?gamelabel
+            ?game as ?uri
+            ?label
             ?image 
         WHERE {
             BIND(<http://dbpedia.org/resource/${source}> AS ?source).
             ?source dbo:genre ?genre.
             ?game a dbo:VideoGame.
             OPTIONAL {?game dbo:thumbnail ?image.}
-            ?game rdfs:label ?gamelabel.
-            FILTER(lang(?gamelabel) = "en").
+            ?game rdfs:label ?label.
+            FILTER(lang(?label) = "en").
             ?game dbo:wikiPageLength ?wikiPageLength.
             ?game dbo:genre ?genre.
         }
-        GROUP BY ?game ?gamelabel ?image ?wikiPageLength
+        GROUP BY ?game ?label ?image ?wikiPageLength
         ORDER BY DESC (?wikiPageLength)
         LIMIT 5
     `);

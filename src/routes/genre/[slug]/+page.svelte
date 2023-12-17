@@ -14,7 +14,7 @@
 
 	onMount(async () => {
 		loading = true;
-		genre_data = (await searchGenreInfo(data.slug)).results.bindings[0];
+		genre_data = (await searchGenreInfo(data.slug))[0];
 		console.log(genre_data);
 
 		if (genre_data.image) {
@@ -25,7 +25,7 @@
 	});
 
 	onMount(async () => {
-		games = (await searchGamesByGenreURI(data.slug)).results.bindings;
+		games = (await searchGamesByGenreURI(data.slug));
         console.log(games);
 	});
 </script>

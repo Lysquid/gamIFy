@@ -12,7 +12,7 @@
 
 	onMount(async () => {
 		loading = true;
-		publisher_data = (await searchPublisherInfo(data.slug)).results.bindings[0];
+		publisher_data = (await searchPublisherInfo(data.slug))[0];
 		console.log(publisher_data);
 
 		if (publisher_data.image) {

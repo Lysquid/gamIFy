@@ -5,7 +5,7 @@ export const DBPEDIA_URL: string = "http://dbpedia.org/sparql";
 export async function executeQuery(query: string): Promise<any> {
     let response = await fetch(urlFromQuery(query));
     console.log(query);
-    return response.status == 200 ? response.json() : undefined;
+    return response.status == 200 ? response.json().then(res => {return res.results.bindings}) : undefined;
 }
 
 function urlFromQuery(query: string): string {

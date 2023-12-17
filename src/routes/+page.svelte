@@ -46,7 +46,7 @@
 		if (search) {
 			filters.push(new ValueContainsFilter('label', search));
 		}
-	    const res = (await searchGames(filters, sort, page_length, offset))?.results.bindings;
+	    const res = (await searchGames(filters, sort, page_length, offset));
 		let result;
 		if (!res) {
 			result = undefined;
@@ -69,7 +69,7 @@
 		if (search) {
 			filters.push(new ValueContainsFilter('label', search));
 		}
-        const res = (await searchPublishers(filters, page_length, offset))?.results.bindings;
+        const res = (await searchPublishers(filters, page_length, offset));
 		let result;
 		if (!res) {
 			result = undefined;
@@ -89,9 +89,9 @@
 	async function loadSuggestions(search: string): Promise<string[]> {
 		let res;
 		if(type==="games") {
-			res = (await searchGameSuggestions(search))?.results.bindings;
+			res = (await searchGameSuggestions(search));
 		} else if (type==="publishers") {
-			res = (await searchPublisherSuggestions(search))?.results.bindings;
+			res = (await searchPublisherSuggestions(search));
 		}
 		return res.map((el: any) => el.label.value);
 	}
