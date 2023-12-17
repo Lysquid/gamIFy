@@ -22,19 +22,8 @@
 	});
 
 	onMount(async () => {
-		// games = (await searchGamesBy("computingPlatform', data.slug)).results.bindings;
 		let filters = [new AttributeFilter("computingPlatform", data.slug)];
-		const res = (await searchGames(filters, "IGN", 10, 0))?.results.bindings;
-		if (!res) {
-			games = undefined;
-		} else {
-            games = await Promise.all(res.map(async (el: any): Promise<ListBoxDataType> => { return {
-                    url: `/game/${encodeURIComponent(el.game.value.split('/').slice(-1))}`, 
-                    title: el.gamelabel.value,
-                    description: el.publisherlabel.value != "" ? `Published by : <strong>${el.publisherlabel.value}</strong>`: undefined,
-                    image: el.image ? await searchImage(el.image.value) : undefined,
-            }}));
-		}
+		games = (await searchGames(filters, "IGN", 10, 0))?.results.bindings;
 	});
 
 </script>
@@ -67,10 +56,12 @@
 			{#if games}
 				<div>
 					<h1 class="text-3xl">Games</h1>
-					<ListBox data={games}></ListBox>
-					{#each games as game}
-						<!-- <SmallListBox name={game.label.value} type="game" uri={game.uri.value} image={game.image?.value}/> -->
-					{/each}
+					<div class="flex flex-col mx-50 gap-5 mt-10 items-center">
+						{#each games as game}
+							<ListBox title={game.gamelabel.value} type="game" uri={game.game.value} image={game.image?.value}></ListBox>
+							<!-- <SmallListBox name={game.label.value} type="game" uri={game.uri.value} image={game.image?.value}/> -->
+						{/each}
+					</div>
 				</div>
 			{/if}
 		

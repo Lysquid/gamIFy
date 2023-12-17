@@ -52,10 +52,10 @@
 			result = undefined;
 		} else {
             result = await Promise.all(res.map(async (el: any): Promise<ListBoxDataType> => { return {
-                    url: `/game/${encodeURIComponent(el.game.value.split('/').slice(-1))}`, 
+                    url: el.game.value,
                     title: el.gamelabel.value,
                     description: el.publisherlabel.value != "" ? `Published by : <strong>${el.publisherlabel.value}</strong>`: undefined,
-                    image: el.image ? await searchImage(el.image.value) : undefined,
+                    image: el.image.value,
             }}));
 		}
 		if (res.length < page_length) {
@@ -75,9 +75,9 @@
 			result = undefined;
 		} else {
             result = await Promise.all(res.map(async (el: any): Promise<ListBoxDataType> => { return {
-                url: `/publisher/${encodeURIComponent(el.publisher.value.split('/').slice(-1))}`,
+                url: el.publisher.value,
                 title: el.publisherlabel.value,
-                image: el.image ? await searchImage(el.image.value) : undefined,
+                image: el.image.value,
             }}));
 		}
 		if (res.length < page_length) {
@@ -148,7 +148,11 @@
 {#if error}
     <p class="text-center m-20 text-lg dark:text-red-400 text-red-600">Error loading data</p>
 {:else if data && data.length != 0}
-	<ListBox data={data}></ListBox>
+	<div class="flex flex-col mx-50 gap-5 mt-10 items-center">
+		{#each data as item}
+			<ListBox title={item.title} description={item.description} image={item.image} uri={item.url} type="game"></ListBox>
+		{/each}
+	</div>
 	<!-- <button on:click={loadMore}>Load More</button> -->
 	{#if !loadedAll}
 		<p use:inView on:enter={loadMore}></p>
