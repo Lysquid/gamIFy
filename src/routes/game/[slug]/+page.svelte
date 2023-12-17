@@ -17,10 +17,10 @@
 		
 		<ul slot="info-entry">
 			<InfoPageTableEntry title="Date" value={game.date?.value}/>
+			<InfoPageTableEntry title="Modes" value={game.modes?.value.split("|")}/>
+			<InfoPageTableEntry title="IGN score" value={game.IGN?.value}/>
 			<InfoPageTableEntry title="Game engine" value={game.gameEngines?.value}/>
 			<InfoPageTableEntry title="Series" value={game.series?.value}/>
-			<InfoPageTableEntry title="Modes" value={game.modes?.value}/>
-			<InfoPageTableEntry title="IGN score" value={game.IGN?.value}/>
 		</ul>
 
 		<div slot="content" class="grid xl:grid-cols-2 gap-x-8 gap-y-8 mt-10">

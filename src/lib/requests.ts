@@ -192,7 +192,7 @@ export async function searchGameInfos(game: string): Promise<any> {
             MIN(?date) as ?date
             GROUP_CONCAT(distinct ?gameEngine; separator=", ") as ?gameEngines
             GROUP_CONCAT(distinct ?oneSeries; separator=", ") as ?series
-            GROUP_CONCAT(distinct ?mode; separator=", ") as ?modes
+            GROUP_CONCAT(distinct ?mode; separator="|") as ?modes
             SUM(?IGN)/COUNT(?IGN) as ?IGN
         WHERE {
             BIND(<http://dbpedia.org/resource/${game}> AS ?game).
@@ -250,7 +250,9 @@ export async function searchPlatformInfos(platform: string): Promise<any> {
             ?image
             ?description
             ?date
-            COUNT(?game) as ?nb_games
+            COUNT(?game) as ?nbGames
+            GROUP_CONCAT(DISTINCT ?developer; SEPARATOR=", ") as ?developers
+            ?website
         WHERE {
             BIND(<http://dbpedia.org/resource/${platform}> AS ?uri).
             ?uri rdfs:label ?label.
@@ -266,6 +268,12 @@ export async function searchPlatformInfos(platform: string): Promise<any> {
             OPTIONAL {
                 ?uri rdfs:comment ?description.
                 FILTER(lang(?description) = "en").
+            }
+            OPTIONAL { ?uri dbo:wikiPageExternalLink ?website. }
+            OPTIONAL {
+                ?uri dbp:developer ?developerUri.
+                ?developerUri rdfs:label ?developer.
+                FILTER(lang(?developer) = "en"). 
             }
             ?game dbo:computingPlatform ?uri.
         }

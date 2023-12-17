@@ -16,7 +16,8 @@
 		
 		<ul slot="info-entry">
 			<InfoPageTableEntry title="Release date" value={platform.date?.value}/>
-			<InfoPageTableEntry title="Number of games" value={platform.nb_games?.value}/>
+			<InfoPageTableEntry title="Developer" value={platform.developers?.value}/>
+			<InfoPageTableEntry title="Number of games" value={platform.nbGames?.value}/>
 		</ul>
 
 		<div slot="content">
