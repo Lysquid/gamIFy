@@ -2,16 +2,20 @@
 
 export const DBPEDIA_URL: string = "http://dbpedia.org/sparql";
 
-export async function executeQuery(query: string): Promise<any> {
+export async function executeQuery(query: string, singleResult=false): Promise<any> {
     let response = await fetch(urlFromQuery(query));
     console.log(query);
-    return response.status == 200 ? response.json().then(res => {return res.results.bindings}) : undefined;
-}
-
-export async function executeQuerySingleResult(query: string): Promise<any> {
-    let response = await fetch(urlFromQuery(query));
-    console.log(query);
-    return response.status == 200 ? response.json().then(res => {return res.results.bindings[0]}) : undefined;
+    if (response.ok) {
+        return response.json().then(res => {
+            if (singleResult) {
+                return res.results.bindings[0];
+            } else {
+                return res.results.bindings;
+            }
+        })
+    } else {
+        throw new Error(response.statusText)
+    }
 }
 
 function urlFromQuery(query: string): string {

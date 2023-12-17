@@ -8,7 +8,7 @@
 	import SmallList from '$lib/components/SmallList.svelte';
 	
 	export let data: PageData;
-	let game_promise = searchGameInfos(data.slug);
+	let game = searchGameInfos(data.slug);
 	let platforms: Promise<any>;
 	let publishers: Promise<any>;
 	let developers: Promise<any>;
@@ -16,6 +16,7 @@
 	let similar_games: Promise<any>;
 	
 	onMount(async () => {
+		game = searchGameInfos(data.slug);
 		platforms = searchList("computingPlatform", data.slug, 5);
 		publishers = searchList("publisher", data.slug);
 		developers = searchList("developer", data.slug);
@@ -26,7 +27,7 @@
 </script>
 
 
-{#await game_promise}
+{#await game}
 	<Spinner color="blue"></Spinner>
 {:then game}
 

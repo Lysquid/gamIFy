@@ -1,4 +1,4 @@
-import { executeQuery, executeQuerySingleResult } from "$lib";
+import { executeQuery } from "$lib";
 
 type FilterAttribute = "label";
 
@@ -33,7 +33,7 @@ export class AttributeFilter implements Filter {
     getFilterLine(): string {
         return `
             BIND(<http://dbpedia.org/resource/${this.value}> AS ?filterUri).
-            ?uri dbo:${this.attribute} ?filterUri.
+            ?game dbo:${this.attribute} ?filterUri.
             ?filterUri rdfs:label ?filterLabel.
             FILTER(lang(?filterLabel) = "en").
         `;
@@ -204,7 +204,7 @@ export async function searchImage(originalUri: string): Promise<string | undefin
 }
 
 export async function searchGameInfos(game: string): Promise<any> {
-    return executeQuerySingleResult(`
+    return executeQuery(`
         SELECT 
             ?label
             ?image
@@ -260,7 +260,7 @@ export async function searchGameInfos(game: string): Promise<any> {
         }
         GROUP BY ?label ?image ?description ?date
         LIMIT 1
-    `);
+    `, true);
 }
 
 export async function searchPlatformInfos(platform: string): Promise<any> {
@@ -288,7 +288,7 @@ export async function searchPlatformInfos(platform: string): Promise<any> {
         }
         GROUP BY ?label ?image ?description ?date
         LIMIT 1
-    `);
+    `, true);
 }
 
 export async function searchList(type: string, source: string, limit=5): Promise<any> {
