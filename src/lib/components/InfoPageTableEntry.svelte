@@ -3,7 +3,6 @@
 	export let title: string;
 	export let value: string|string[];
 	export let url: string|null = null;
-	console.log(value)
 </script>
 
 {#if value && (typeof value === "string" || value[0].length > 0)}

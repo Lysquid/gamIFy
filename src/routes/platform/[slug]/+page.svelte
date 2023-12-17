@@ -1,22 +1,14 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import type { PageData } from './$types';
 	import { searchPlatformInfos, AttributeFilter } from '$lib/requests';
 	import InfoPage from '$lib/components/InfoPage.svelte';
 	import { Spinner } from 'flowbite-svelte';
 	import InfoPageTableEntry from '$lib/components/InfoPageTableEntry.svelte';
 	import SortedGameList from '$lib/components/SortedGameList.svelte';
-	
 	export let data: PageData;
-	let platform = searchPlatformInfos(data.slug);
-		
-	onMount(async () => {
-		platform = searchPlatformInfos(data.slug);
-	});
-
 </script>
 
-{#await platform}
+{#await searchPlatformInfos(data.slug)}
 	<Spinner color="blue"></Spinner>
 {:then platform}
 

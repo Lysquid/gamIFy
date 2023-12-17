@@ -2,7 +2,6 @@
 	import { Spinner } from "flowbite-svelte";
 	import ListBox from "./ListBox.svelte";
 	import { AttributeFilter, searchGames } from "$lib/requests";
-	import { onMount } from "svelte";
 
     export var filter: AttributeFilter;
 	let games: Promise<any>;

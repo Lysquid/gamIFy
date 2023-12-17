@@ -257,8 +257,11 @@ export async function searchPlatformInfos(platform: string): Promise<any> {
             FILTER(lang(?label) = "en").
             OPTIONAL {?uri dbo:thumbnail ?image.}
             OPTIONAL {
-                ?uri dbp:date ?date.
-                FILTER(lang(?description) = "en").
+                {
+                    ?uri dbp:date ?date.
+                } UNION {
+                    ?uri dbp:releasedate ?date.
+                }
             }
             OPTIONAL {
                 ?uri rdfs:comment ?description.

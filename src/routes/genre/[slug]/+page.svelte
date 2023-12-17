@@ -1,22 +1,14 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import type { PageData } from './$types';
 	import { searchGenreInfo, AttributeFilter } from '$lib/requests';
 	import { Spinner } from 'flowbite-svelte';
 	import InfoPage from '$lib/components/InfoPage.svelte';
 	import InfoPageTableEntry from '$lib/components/InfoPageTableEntry.svelte';
 	import SortedGameList from '$lib/components/SortedGameList.svelte';
-
 	export let data: PageData;
-	let genre: Promise<any> = searchGenreInfo(data.slug);
-
-	onMount(async () => {
-		genre = searchGenreInfo(data.slug);
-	});
-
 </script>
 
-{#await genre}
+{#await searchGenreInfo(data.slug)}
 	<Spinner color="blue"></Spinner>
 {:then genre}
 

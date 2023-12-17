@@ -6,13 +6,12 @@ export async function executeQuery(query: string, singleResult=false): Promise<a
     let response = await fetch(urlFromQuery(query));
     console.log(query);
     if (response.ok) {
-        return response.json().then(res => {
-            if (singleResult) {
-                return res.results.bindings[0];
-            } else {
-                return res.results.bindings;
-            }
-        })
+        let json = await response.json()
+        if (singleResult) {
+            return json.results.bindings[0];
+        } else {
+            return json.results.bindings;
+        }
     } else {
         throw new Error(response.statusText)
     }
