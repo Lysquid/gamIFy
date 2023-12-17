@@ -170,26 +170,6 @@ export async function searchGamesByGenre(source: string): Promise<any> {
     `);
 }
 
-export async function searchGamesByGenreURI(genre: string): Promise<any> {
-    return executeQuery(`
-        SELECT DISTINCT
-            ?game
-            ?gamelabel
-            ?image 
-        WHERE {
-            BIND(<http://dbpedia.org/resource/${genre}> AS ?genre).
-            ?genre ^dbo:genre ?game.
-            ?game a dbo:VideoGame.
-            OPTIONAL {?game dbo:thumbnail ?image.}
-            ?game rdfs:label ?gamelabel.
-            FILTER(lang(?gamelabel) = "en").
-            ?game dbo:wikiPageLength ?wikiPageLength.
-        }
-        GROUP BY ?game ?gamelabel ?image ?wikiPageLength
-        ORDER BY DESC (?wikiPageLength)
-        LIMIT 5
-    `);
-}
 export async function searchImage(originalUri: string): Promise<string | undefined> {
     let urlParts = originalUri.split("/");
     let last = urlParts[urlParts.length - 1];
@@ -349,20 +329,24 @@ export async function searchPublisherInfo(publisher: string): Promise<any> {
 }
 
 export async function searchGenreInfo(genre: string): Promise<any> {
-
-    let query = `
-        SELECT ?label ?description ?image min(?releaseDate) as ?createdDate count(?game) as ?gamecount WHERE {
-        BIND(<http://dbpedia.org/resource/${genre}> AS ?genre).
-        ?genre rdfs:label ?label.
-        ?genre ^dbo:genre ?game.
-        ?game a dbo:VideoGame.
-        FILTER(lang(?label) = "en").
-        OPTIONAL {?genre dbo:abstract ?description. FILTER(lang(?description) = "en")}.
-        OPTIONAL {?genre dbo:thumbnail ?image.}.
-        OPTIONAL {?game dbo:releaseDate ?releaseDate}
+    return executeQuery(`
+        SELECT
+            ?label
+            ?description
+            ?image
+            MIN(?releaseDate) as ?createdDate
+            COUNT(?game) as ?gamecount
+        WHERE {
+            BIND(<http://dbpedia.org/resource/${genre}> AS ?genre).
+            ?genre rdfs:label ?label.
+            ?genre ^dbo:genre ?game.
+            ?game a dbo:VideoGame.
+            FILTER(lang(?label) = "en").
+            OPTIONAL {?genre dbo:abstract ?description. FILTER(lang(?description) = "en")}.
+            OPTIONAL {?genre dbo:thumbnail ?image.}.
+            OPTIONAL {?game dbo:releaseDate ?releaseDate}
         }
         GROUP BY ?label ?description ?image
         LIMIT 1
-    `
-    return executeQuery(query);
+    `, true);
 }

@@ -1,69 +1,47 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import type { PageData } from './$types';
-	import { searchImage, searchGenreInfo, searchGamesByGenreURI } from '$lib/requests';
+	import { searchGenreInfo, searchGames, AttributeFilter } from '$lib/requests';
 	import { Spinner } from 'flowbite-svelte';
 	import InfoPage from '$lib/components/InfoPage.svelte';
 	import InfoPageTableEntry from '$lib/components/InfoPageTableEntry.svelte';
-	import SmallListBox from '$lib/components/SmallListBox.svelte';
+	import ListBox from '$lib/components/ListBox.svelte';
 
 	export let data: PageData;
-	let loading = true;
-	let genre_data: any = null;
-	let games: null | any;
+	let genre: Promise<any> = searchGenreInfo(data.slug);
+	let games: Promise<any>;
 
 	onMount(async () => {
-		loading = true;
-		genre_data = (await searchGenreInfo(data.slug))[0];
-		console.log(genre_data);
-
-		if (genre_data.image) {
-			genre_data.image = await searchImage(genre_data.image.value);
-		}
-
-		loading = false;
+		genre = searchGenreInfo(data.slug);
+		let filters = [new AttributeFilter("genre", data.slug)];
+		games = searchGames(filters, "wikiPageLength", 10, 0);
 	});
 
-	onMount(async () => {
-		games = (await searchGamesByGenreURI(data.slug));
-        console.log(games);
-	});
 </script>
 
-{#if loading}
+{#await genre}
 	<Spinner color="blue"></Spinner>
-{:else if genre_data}
-	<InfoPage
-		title={genre_data?.label?.value || ''}
-		description={genre_data?.description?.value || ''}
-		image={genre_data?.image}
-	>
+{:then genre}
+
+	<InfoPage title={genre.label.value} description={genre.description?.value} image={genre.image?.value}>
+		
 		<div slot="info-entry">
-			<InfoPageTableEntry title="Game count">
-				<p>{genre_data?.gamecount?.value}</p>
-			</InfoPageTableEntry>
-			{#if genre_data?.createdDate?.value}
-				<InfoPageTableEntry title="Creation date">
-					<p>{genre_data?.createdDate?.value}</p>
-				</InfoPageTableEntry>
-			{/if}
+			<InfoPageTableEntry title="Game count" value={genre.gamecount?.value}/>
+			<InfoPageTableEntry title="Creation date" value={genre.createdDate?.value}/>
 		</div>
+
 		<div slot="content" class="mt-10">
-			{#if games?.length}
-				<div>
-					<h1 class="text-3xl">Popular games of this genre</h1>
+			{#await games then games}
+				<h1 class="text-3xl">Games</h1>
+				<div class="flex flex-col mx-50 gap-5 mt-10">
 					{#each games as game}
-						<SmallListBox
-							name={game.gamelabel.value}
-							type="game"
-							uri={game.game.value}
-							image={game.image?.value}
-						/>
+						<ListBox title={game.label.value} type="game" uri={game.uri.value} image={game.image?.value}></ListBox>
 					{/each}
 				</div>
-			{/if}
+			{/await}
 		</div>
 	</InfoPage>
-{:else}
-	Not found
-{/if}
+
+{:catch error}
+	<p>{error}</p>
+{/await}
