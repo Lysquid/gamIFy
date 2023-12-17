@@ -16,7 +16,7 @@
 <div class="w-full lg:w-2/3 m-auto flex flex-row justify-between space-x-10">
 	<div class="mr-auto w-2/3">
 		<h1 class="text-bold text-5xl mb-10">{title}</h1>
-		<p class="text-justify">{description}</p>
+		<p class="text-justify mb-10">{description}</p>
 		<slot name="content"/>
 	</div>
 	{#if image}

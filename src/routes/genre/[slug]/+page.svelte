@@ -1,20 +1,17 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import type { PageData } from './$types';
-	import { searchGenreInfo, searchGames, AttributeFilter } from '$lib/requests';
+	import { searchGenreInfo, AttributeFilter } from '$lib/requests';
 	import { Spinner } from 'flowbite-svelte';
 	import InfoPage from '$lib/components/InfoPage.svelte';
 	import InfoPageTableEntry from '$lib/components/InfoPageTableEntry.svelte';
-	import ListBox from '$lib/components/ListBox.svelte';
+	import SortedGameList from '$lib/components/SortedGameList.svelte';
 
 	export let data: PageData;
 	let genre: Promise<any> = searchGenreInfo(data.slug);
-	let games: Promise<any>;
 
 	onMount(async () => {
 		genre = searchGenreInfo(data.slug);
-		let filters = [new AttributeFilter("genre", data.slug)];
-		games = searchGames(filters, "wikiPageLength", 10, 0);
 	});
 
 </script>
@@ -30,15 +27,8 @@
 			<InfoPageTableEntry title="Creation date" value={genre.createdDate?.value}/>
 		</div>
 
-		<div slot="content" class="mt-10">
-			{#await games then games}
-				<h1 class="text-3xl">Games</h1>
-				<div class="flex flex-col mx-50 gap-5 mt-10">
-					{#each games as game}
-						<ListBox title={game.label.value} type="game" uri={game.uri.value} image={game.image?.value}></ListBox>
-					{/each}
-				</div>
-			{/await}
+		<div slot="content">
+			<SortedGameList filter={new AttributeFilter("genre", data.slug)}/>
 		</div>
 	</InfoPage>
 
