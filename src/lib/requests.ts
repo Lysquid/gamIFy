@@ -183,6 +183,21 @@ export async function searchImage(originalUri: string): Promise<string | undefin
     return body.query?.pages[pageId]?.imageinfo?.at(0)?.url;
 }
 
+export async function searchList(type: string, source: string, limit=5): Promise<any> {
+    return executeQuery(`
+        SELECT ?uri ?label ?image WHERE {
+            BIND(<http://dbpedia.org/resource/${source}> AS ?source).
+            ?source dbo:${type} ?uri.
+            ?uri rdfs:label ?label.
+            FILTER(lang(?label) = "en").
+            OPTIONAL {?uri dbo:thumbnail ?image.}
+            ?uri dbo:wikiPageLength ?wikiPageLength.
+        }
+        ORDER BY DESC(?wikiPageLength)
+        ${limit > 0 ? 'LIMIT ' + limit : ''}
+    `);
+}
+
 export async function searchGameInfos(game: string): Promise<any> {
     return executeQuery(`
         SELECT 
@@ -252,7 +267,6 @@ export async function searchPlatformInfos(platform: string): Promise<any> {
             ?date
             COUNT(?game) as ?nbGames
             GROUP_CONCAT(DISTINCT ?developer; SEPARATOR=", ") as ?developers
-            ?website
         WHERE {
             BIND(<http://dbpedia.org/resource/${platform}> AS ?uri).
             ?uri rdfs:label ?label.
@@ -269,7 +283,6 @@ export async function searchPlatformInfos(platform: string): Promise<any> {
                 ?uri rdfs:comment ?description.
                 FILTER(lang(?description) = "en").
             }
-            OPTIONAL { ?uri dbo:wikiPageExternalLink ?website. }
             OPTIONAL {
                 ?uri dbp:developer ?developerUri.
                 ?developerUri rdfs:label ?developer.
@@ -280,21 +293,6 @@ export async function searchPlatformInfos(platform: string): Promise<any> {
         GROUP BY ?label ?image ?description ?date
         LIMIT 1
     `, true);
-}
-
-export async function searchList(type: string, source: string, limit=5): Promise<any> {
-    return executeQuery(`
-        SELECT ?uri ?label ?image WHERE {
-            BIND(<http://dbpedia.org/resource/${source}> AS ?source).
-            ?source dbo:${type} ?uri.
-            ?uri rdfs:label ?label.
-            FILTER(lang(?label) = "en").
-            OPTIONAL {?uri dbo:thumbnail ?image.}
-            ?uri dbo:wikiPageLength ?wikiPageLength.
-        }
-        ORDER BY DESC(?wikiPageLength)
-        ${limit > 0 ? 'LIMIT ' + limit : ''}
-    `);
 }
 
 export async function searchPublisherInfo(publisher: string): Promise<any> {
