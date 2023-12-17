@@ -15,7 +15,7 @@
 		<div class="w-1/3">
 			<table class="w-full sticky top-32">
 				<tr>
-					<td colspan="2">
+					<td colspan="2" class="px-5 pb-3">
 						<img class="rounded-lg w-full" src={image} alt="Publisher logo" />
 					</td>
 				</tr>

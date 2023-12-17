@@ -20,6 +20,26 @@ export class ValueContainsFilter implements Filter {
     }
 }
 
+
+export class AttributeFilter implements Filter {
+    attribute: string;
+    value: string;
+
+    constructor(type: string, value: string) {
+        this.attribute = type;
+        this.value = value;
+    }
+
+    getFilterLine(): string {
+        return `
+            BIND(<http://dbpedia.org/resource/${this.value}> AS ?filterUri).
+            ?game dbo:${this.attribute} ?filterUri.
+            ?filterUri rdfs:label ?filterLabel.
+            FILTER(lang(?filterLabel) = "en").
+        `;
+    }
+}
+
 export async function searchGames(filters: Filter[], orderby: "wikipagelength" | "date" | "IGN", length: number, offset: number): Promise<any> {
     let filter_lines = filters.map(filter => filter.getFilterLine()).join("");
 
@@ -271,15 +291,15 @@ export async function searchPlatformInfos(platform: string): Promise<any> {
     `);
 }
 
-export async function searchList(type: string, source: string, limit=5, reverse=false): Promise<any> {
+export async function searchList(type: string, source: string, limit=5): Promise<any> {
     return executeQuery(`
         SELECT ?uri ?label ?image WHERE {
             BIND(<http://dbpedia.org/resource/${source}> AS ?source).
-            ${reverse ? '?uri' : '?source'} dbo:${type} ${reverse ? '?source' : '?uri'}.
+            ?source dbo:${type} ?uri.
             ?uri rdfs:label ?label.
-            ?uri dbo:wikiPageLength ?wikipagelength.
             FILTER(lang(?label) = "en").
             OPTIONAL {?uri dbo:thumbnail ?image.}
+            ?uri dbo:wikiPageLength ?wikipagelength.
         }
         ORDER BY DESC(?wikipagelength)
         ${limit > 0 ? 'LIMIT ' + limit : ''}
