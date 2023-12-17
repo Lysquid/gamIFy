@@ -307,29 +307,45 @@ export async function searchList(type: string, source: string, limit=5): Promise
 }
 
 export async function searchPublisherInfo(publisher: string): Promise<any> {
-
-    let query = `
-        SELECT ?publisherlabel ?description ?emp ?homepage ?image ?citylabel ?foundingDate ?founderName
-        GROUP_CONCAT(DISTINCT ?people; SEPARATOR=" | ") as ?keyPeople
+    return executeQuery(`
+        SELECT
+            ?label
+            ?description
+            ?emp
+            ?homepage
+            ?image
+            ?citylabel
+            ?foundingDate
+            ?founderName
+            GROUP_CONCAT(DISTINCT ?people; SEPARATOR=" | ") as ?keyPeople
         WHERE {
-        BIND(<http://dbpedia.org/resource/${publisher}> AS ?publisher).
-        ?publisher rdfs:label ?publisherlabel.
-        FILTER(lang(?publisherlabel) = "en").
-        OPTIONAL {?publisher dbo:abstract ?description. FILTER(lang(?description) = "en")}.
-        OPTIONAL {?publisher dbo:numberOfEmployees ?emp.}.
-        OPTIONAL {?publisher foaf:homepage ?homepage.}.
-        OPTIONAL {?publisher dbo:thumbnail ?image.}.
-        OPTIONAL {?publisher dbo:locationCity ?city. ?city rdfs:label ?citylabel. FILTER(lang(?citylabel) = "en").}.
-        OPTIONAL {?publisher dbp:keyPeople ?people.}
-        OPTIONAL {?publisher dbo:foundingDate ?foundingDate.}
-        OPTIONAL {?publisher dbp:founder ?founder. ?founder rdfs:label ?founderName}
-        ?game dbo:publisher ?publisher.
-        ?game a dbo:VideoGame.
+            BIND(<http://dbpedia.org/resource/${publisher}> AS ?publisher).
+            ?publisher rdfs:label ?label.
+            FILTER(lang(?label) = "en").
+            OPTIONAL {
+                ?publisher rdfs:comment ?description.
+                FILTER(lang(?description) = "en")
+            }.
+            OPTIONAL {?publisher dbo:numberOfEmployees ?emp.}.
+            OPTIONAL {?publisher foaf:homepage ?homepage.}.
+            OPTIONAL {?publisher dbo:thumbnail ?image.}.
+            OPTIONAL {
+                ?publisher dbo:locationCity ?city.
+                ?city rdfs:label ?citylabel.
+                FILTER(lang(?citylabel) = "en").
+            }.
+            OPTIONAL {?publisher dbp:keyPeople ?people.}
+            OPTIONAL {?publisher dbo:foundingDate ?foundingDate.}
+            OPTIONAL {
+                ?publisher dbp:founder ?founder.
+                ?founder rdfs:label ?founderName
+            }
+            ?game dbo:publisher ?publisher.
+            ?game a dbo:VideoGame.
         }
-        GROUP BY ?publisherlabel ?description ?emp ?homepage ?image ?citylabel ?foundingDate ?founderName
+        GROUP BY ?label ?description ?emp ?homepage ?image ?citylabel ?foundingDate ?founderName
         LIMIT 1
-    `
-    return executeQuery(query);
+    `, true);
 }
 
 export async function searchGenreInfo(genre: string): Promise<any> {

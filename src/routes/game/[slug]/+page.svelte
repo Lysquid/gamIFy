@@ -42,8 +42,8 @@
 		</ul>
 
 		<div slot="content" class="grid xl:grid-cols-2 gap-x-8 gap-y-8 mt-10">
-			<SmallList title="Publishers" type="publisher" promise={publishers}/>
-			<SmallList title="Developers" type="publisher" promise={developers}/>
+			<SmallList title="Publishers" type="company" promise={publishers}/>
+			<SmallList title="Developers" type="company" promise={developers}/>
 			<SmallList title="Genres" type="genre" promise={genres}/>
 			<SmallList title="Platforms" type="platform" promise={platforms}/>
 			<SmallList title="Popular games of the same genre" type="game" promise={similar_games}/>
