@@ -1,6 +1,6 @@
 import { executeQuery } from "$lib";
 
-type FilterAttribute = "gamelabel" | "publisherlabel";
+type FilterAttribute = "label";
 
 export interface Filter {
     getFilterLine(): string;
@@ -33,35 +33,35 @@ export class AttributeFilter implements Filter {
     getFilterLine(): string {
         return `
             BIND(<http://dbpedia.org/resource/${this.value}> AS ?filterUri).
-            ?game dbo:${this.attribute} ?filterUri.
+            ?uri dbo:${this.attribute} ?filterUri.
             ?filterUri rdfs:label ?filterLabel.
             FILTER(lang(?filterLabel) = "en").
         `;
     }
 }
 
-export async function searchGames(filters: Filter[], orderby: "wikipagelength" | "date" | "IGN", length: number, offset: number): Promise<any> {
+export async function searchGames(filters: Filter[], orderby: "wikiPageLength" | "date" | "IGN", length: number, offset: number): Promise<any> {
     let filter_lines = filters.map(filter => filter.getFilterLine()).join("");
 
     return executeQuery(`
         SELECT DISTINCT
-            ?game
-            ?gamelabel
+            ?game as ?uri
+            ?label
             ?image 
             MIN(?releaseDate) as ?date
-            GROUP_CONCAT(distinct ?publisherlabels; separator = ", ") as ?publisherlabel
+            GROUP_CONCAT(distinct ?publisher; separator = ", ") as ?publishers
             SUM(?IGN)/COUNT(?IGN) as ?IGN
         WHERE {
             ?game a dbo:VideoGame.
             OPTIONAL {?game dbo:thumbnail ?image.}
-            OPTIONAL {?game dbo:publisher ?publisher.}
-            ?publisher rdfs:label ?publisherlabels.
-            FILTER(lang(?publisherlabels) = "en").
+            OPTIONAL {?game dbo:publisher ?publisherUri.}
+            ?publisherUri rdfs:label ?publisher.
+            FILTER(lang(?publisher) = "en").
             OPTIONAL {?game dbo:releaseDate ?trueDate.}
             BIND(coalesce(?trueDate, 0) as ?releaseDate).
-            ?game rdfs:label ?gamelabel.
-            ?game dbo:wikiPageLength ?wikipagelength.
-            FILTER(lang(?gamelabel) = "en").
+            ?game dbo:wikiPageLength ?wikiPageLength.
+            ?game rdfs:label ?label.
+            FILTER(lang(?label) = "en").
             OPTIONAL {
                 ?game rdfs:comment ?description.
                 FILTER(lang(?description) = "en").
@@ -82,7 +82,7 @@ export async function searchGames(filters: Filter[], orderby: "wikipagelength" |
                 }
             }
         }
-        GROUP BY ?game ?gamelabel ?image ?wikipagelength
+        GROUP BY ?game ?label ?image ?wikiPageLength
         ORDER BY DESC(?${orderby})
         LIMIT ${length}
         OFFSET ${offset}
@@ -94,56 +94,56 @@ export async function searchPublishers(filters: Filter[], length: number, offset
 
     return executeQuery(`
         SELECT 
-            ?publisher 
-            ?publisherlabel 
+            ?publisher as ?uri 
+            ?label
             ?image 
-            (count(?published) as ?nbpublished) 
+            count(?published) as ?nbPublished
         WHERE {
             ?publisher a dbo:Company.
             OPTIONAL{?publisher dbo:thumbnail ?image.}
-            ?publisher rdfs:label ?publisherlabel.
-            FILTER(lang(?publisherlabel) = "en").
+            ?publisher rdfs:label ?label.
+            FILTER(lang(?label) = "en").
             ${filter_lines}
             ?published dbo:publisher ?publisher.
             ?published a dbo:VideoGame.
         }
-        ORDER BY DESC (?nbpublished)
+        ORDER BY DESC (?nbPublished)
         LIMIT ${length}
         OFFSET ${offset}
     `);
 }
 
-export async function searchGameSuggestions(filters: Filter[]): Promise<any> {
-    let filter_lines = filters.map(filter => filter.getFilterLine()).join("");
+export async function searchGameSuggestions(search: string): Promise<any> {
     return executeQuery(`
-        SELECT DISTINCT ?gamelabel WHERE {
+        SELECT DISTINCT
+            ?label
+        WHERE {
             ?game a dbo:VideoGame.
-            ?game rdfs:label ?gamelabel.
-            ?game dbo:wikiPageLength ?wikipagelength.
-            FILTER(lang(?gamelabel) = "en").
-            ${filter_lines}
+            ?game rdfs:label ?label.
+            ?game dbo:wikiPageLength ?wikiPageLength.
+            FILTER(lang(?label) = "en").
+            FILTER(strstarts(lcase(?label), lcase("${search}")))
         }
-        GROUP BY ?game ?gamelabel ?wikipagelength
-        ORDER BY DESC(?wikipagelength)
+        GROUP BY ?game ?label ?wikiPageLength
+        ORDER BY DESC(?wikiPageLength)
         LIMIT 5
     `);
 }
 
-export async function searchPublisherSuggestions(filters: Filter[]): Promise<any> {
-    let filter_lines = filters.map(filter => filter.getFilterLine()).join("");
+export async function searchPublisherSuggestions(search: string): Promise<any> {
     return executeQuery(`
         SELECT 
-            ?publisherlabel 
-            (count(?published) as ?nbpublished) 
+            ?label 
+            (count(?published) as ?nbPublished) 
         WHERE {
             ?publisher a dbo:Company.
-            ?publisher rdfs:label ?publisherlabel.
-            FILTER(lang(?publisherlabel) = "en").
-            ${filter_lines}
+            ?publisher rdfs:label ?label.
+            FILTER(lang(?label) = "en").
             ?published dbo:publisher ?publisher.
             ?published a dbo:VideoGame.
+            FILTER(strstarts(lcase(?label), lcase("${search}")))
         }
-        ORDER BY DESC (?nbpublished)
+        ORDER BY DESC (?nbPublished)
         LIMIT 5
     `);
 }
@@ -161,11 +161,11 @@ export async function searchGamesByGenre(source: string): Promise<any> {
             OPTIONAL {?game dbo:thumbnail ?image.}
             ?game rdfs:label ?gamelabel.
             FILTER(lang(?gamelabel) = "en").
-            ?game dbo:wikiPageLength ?wikipagelength.
+            ?game dbo:wikiPageLength ?wikiPageLength.
             ?game dbo:genre ?genre.
         }
-        GROUP BY ?game ?gamelabel ?image ?wikipagelength
-        ORDER BY DESC (?wikipagelength)
+        GROUP BY ?game ?gamelabel ?image ?wikiPageLength
+        ORDER BY DESC (?wikiPageLength)
         LIMIT 5
     `);
 }
@@ -183,10 +183,10 @@ export async function searchGamesByGenreURI(genre: string): Promise<any> {
             OPTIONAL {?game dbo:thumbnail ?image.}
             ?game rdfs:label ?gamelabel.
             FILTER(lang(?gamelabel) = "en").
-            ?game dbo:wikiPageLength ?wikipagelength.
+            ?game dbo:wikiPageLength ?wikiPageLength.
         }
-        GROUP BY ?game ?gamelabel ?image ?wikipagelength
-        ORDER BY DESC (?wikipagelength)
+        GROUP BY ?game ?gamelabel ?image ?wikiPageLength
+        ORDER BY DESC (?wikiPageLength)
         LIMIT 5
     `);
 }
@@ -299,9 +299,9 @@ export async function searchList(type: string, source: string, limit=5): Promise
             ?uri rdfs:label ?label.
             FILTER(lang(?label) = "en").
             OPTIONAL {?uri dbo:thumbnail ?image.}
-            ?uri dbo:wikiPageLength ?wikipagelength.
+            ?uri dbo:wikiPageLength ?wikiPageLength.
         }
-        ORDER BY DESC(?wikipagelength)
+        ORDER BY DESC(?wikiPageLength)
         ${limit > 0 ? 'LIMIT ' + limit : ''}
     `);
 }

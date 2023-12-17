@@ -58,7 +58,7 @@
 					<h1 class="text-3xl">Games</h1>
 					<div class="flex flex-col mx-50 gap-5 mt-10 items-center">
 						{#each games as game}
-							<ListBox title={game.gamelabel.value} type="game" uri={game.game.value} image={game.image?.value}></ListBox>
+							<ListBox title={game.label.value} type="game" uri={game.uri.value} image={game.image?.value}></ListBox>
 							<!-- <SmallListBox name={game.label.value} type="game" uri={game.uri.value} image={game.image?.value}/> -->
 						{/each}
 					</div>

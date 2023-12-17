@@ -12,7 +12,7 @@
 
 	let error: boolean = false;
 
-	let sort: "wikipagelength" | "date";
+	let sort: "wikiPageLength" | "date";
 
     let type: "games" | "publishers" | "IGN";
 
@@ -44,7 +44,7 @@
 	async function getGamesData(search: string) : Promise<ListBoxDataType[] | undefined> {
 		let filters: Filter[] = [];
 		if (search) {
-			filters.push(new ValueContainsFilter('gamelabel', search));
+			filters.push(new ValueContainsFilter('label', search));
 		}
 	    const res = (await searchGames(filters, sort, page_length, offset))?.results.bindings;
 		let result;
@@ -52,10 +52,10 @@
 			result = undefined;
 		} else {
             result = await Promise.all(res.map(async (el: any): Promise<ListBoxDataType> => { return {
-                    url: el.game.value,
-                    title: el.gamelabel.value,
-                    description: el.publisherlabel.value != "" ? `Published by : <strong>${el.publisherlabel.value}</strong>`: undefined,
-                    image: el.image.value,
+					uri: el.uri.value,
+                    title: el.label.value,
+                    description: el.publishers.value != "" ? `Published by : <strong>${el.publishers.value}</strong>`: undefined,
+                    image: el.image?.value,
             }}));
 		}
 		if (res.length < page_length) {
@@ -67,17 +67,17 @@
 	async function getPublishersData(search: string) : Promise<ListBoxDataType[] | undefined> {
 		let filters: Filter[] = [];
 		if (search) {
-			filters.push(new ValueContainsFilter('publisherlabel', search));
+			filters.push(new ValueContainsFilter('label', search));
 		}
-        const res = (await searchPublishers(filters, page_length, offset))?.results.bindings
+        const res = (await searchPublishers(filters, page_length, offset))?.results.bindings;
 		let result;
 		if (!res) {
 			result = undefined;
 		} else {
             result = await Promise.all(res.map(async (el: any): Promise<ListBoxDataType> => { return {
-                url: el.publisher.value,
-                title: el.publisherlabel.value,
-                image: el.image.value,
+                uri: el.uri.value,
+                title: el.label.value,
+                image: el.image?.value,
             }}));
 		}
 		if (res.length < page_length) {
@@ -87,15 +87,13 @@
 	}
 
 	async function loadSuggestions(search: string): Promise<string[]> {
+		let res;
 		if(type==="games") {
-			const res = (await searchGameSuggestions([new ValueContainsFilter('gamelabel', search)]))?.results.bindings;
-			return res.map((el: any) => el.gamelabel.value);
-		
+			res = (await searchGameSuggestions(search))?.results.bindings;
 		} else if (type==="publishers") {
-			const res = (await searchPublisherSuggestions([new ValueContainsFilter('publisherlabel', search)]))?.results.bindings;
-			return res.map((el: any) => el.publisherlabel.value);
+			res = (await searchPublisherSuggestions(search))?.results.bindings;
 		}
-		return [];
+		return res.map((el: any) => el.label.value);
 	}
 
 	async function loadMore() {
@@ -137,7 +135,7 @@
 		<div class="flex max-w-3xl mx-auto justify-center my-10 items-center space-x-2">
 			<label for="sort-select">Sort by</label>
 			<select class="dark:bg-blue-900 bg-blue-700 p-2 rounded-lg text-white" id="sort-select" bind:value={sort} on:change={async () => await searchQuery(search)}>
-				<option value="wikipagelength">Popularity</option>
+				<option value="wikiPageLength">Popularity</option>
 				<option value="date">Release Date</option>
 				<option value="IGN">IGN Score</option>
 			</select>
@@ -150,7 +148,7 @@
 {:else if data && data.length != 0}
 	<div class="flex flex-col mx-50 gap-5 mt-10 items-center">
 		{#each data as item}
-			<ListBox title={item.title} description={item.description} image={item.image} uri={item.url} type="game"></ListBox>
+			<ListBox title={item.title} description={item.description} image={item.image} uri={item.uri} type="game"></ListBox>
 		{/each}
 	</div>
 	<!-- <button on:click={loadMore}>Load More</button> -->

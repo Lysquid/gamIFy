@@ -3,7 +3,7 @@
         title: string, 
         description?: string, 
         image?: string, 
-        url: string
+        uri: string
     };
     
 </script>
