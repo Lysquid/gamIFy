@@ -51,12 +51,12 @@
 		if (!res) {
 			result = undefined;
 		} else {
-            result = await Promise.all(res.map(async (el: any): Promise<ListBoxDataType> => { return {
+            result = res.map((el: any): ListBoxDataType => { return {
 					uri: el.uri.value,
                     title: el.label.value,
                     description: el.publishers.value != "" ? `Published by : <strong>${el.publishers.value}</strong>`: undefined,
                     image: el.image?.value,
-            }}));
+            }});
 		}
 		if (res.length < page_length) {
 			loadedAll = true;
@@ -74,11 +74,11 @@
 		if (!res) {
 			result = undefined;
 		} else {
-            result = await Promise.all(res.map(async (el: any): Promise<ListBoxDataType> => { return {
+            result = res.map((el: any): ListBoxDataType => { return {
                 uri: el.uri.value,
                 title: el.label.value,
                 image: el.image?.value,
-            }}));
+            }});
 		}
 		if (res.length < page_length) {
 			loadedAll = true;
