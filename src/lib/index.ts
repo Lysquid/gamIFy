@@ -7,6 +7,9 @@ export async function executeQuery(query: string, singleResult=false): Promise<a
     console.log(query);
     if (response.ok) {
         let json = await response.json()
+        if (json.results.bindings.length == 0) {
+            throw new Error("Not found");
+        }
         if (singleResult) {
             return json.results.bindings[0];
         } else {

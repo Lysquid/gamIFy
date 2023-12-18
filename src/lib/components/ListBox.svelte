@@ -28,7 +28,7 @@
 </script>
 
 
-<a href="/{type}/{uri.split('/').slice(-1)}" class="flex bg-white hover:bg-gray-50 shadow-lg dark:bg-gray-700 dark:hover:bg-gray-600 h-32 gap-5 rounded-xl overflow-hidden hover:scale-105 transition cursor-pointer">
+<a href="/{type}/{encodeURIComponent(uri.split('/').slice(-1)[0])}" class="flex bg-white hover:bg-gray-50 shadow-lg dark:bg-gray-700 dark:hover:bg-gray-600 h-32 gap-5 rounded-xl overflow-hidden hover:scale-105 transition cursor-pointer">
     {#if image}
         <img class="w-32 object-contain" src="{image}" alt=""/>
     {:else}
