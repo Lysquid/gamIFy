@@ -40,7 +40,7 @@ export class AttributeFilter implements Filter {
     }
 }
 
-export async function searchGames(filters: Filter[], orderby: "wikiPageLength" | "date" | "IGN", length: number, offset: number): Promise<any> {
+export async function searchGames(filters: Filter[], orderby: "wikiPageLength" | "date" | "IGN", dir: "asc" | "desc", length: number, offset: number): Promise<any> {
     let filter_lines = filters.map(filter => filter.getFilterLine()).join("");
 
     return executeQuery(`
@@ -83,7 +83,7 @@ export async function searchGames(filters: Filter[], orderby: "wikiPageLength" |
             }
         }
         GROUP BY ?game ?label ?image ?wikiPageLength
-        ORDER BY DESC(?${orderby})
+        ORDER BY ${dir}(?${orderby})
         LIMIT ${length}
         OFFSET ${offset}
     `);

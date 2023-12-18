@@ -9,7 +9,7 @@
     search();
     
     async function search() {
-        games = searchGames([filter], sort, 10, 0);
+        games = searchGames([filter], sort, "desc", 10, 0);
     }
 
 </script>

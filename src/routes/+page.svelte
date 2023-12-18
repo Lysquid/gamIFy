@@ -16,6 +16,8 @@
 
     let type: "game" | "company";
 
+	let order: "asc" | "desc";
+
 	let loadedAll = false;
 
 	let loadingMore = false;
@@ -46,7 +48,7 @@
 		if (search) {
 			filters.push(new ValueContainsFilter('label', search));
 		}
-	    const res = (await searchGames(filters, sort, page_length, offset));
+	    const res = (await searchGames(filters, sort, order, page_length, offset));
 		let result;
 		if (!res) {
 			result = undefined;
@@ -132,13 +134,22 @@
 		<SearchBar getSuggestions={loadSuggestions} onSearch={searchQuery} placeholder="search for a {type}" bind:search></SearchBar>
 	</div>
 	{#if type == "game"}
-		<div class="flex max-w-3xl mx-auto justify-center my-10 items-center space-x-2">
-			<label for="sort-select">Sort by</label>
-			<select class="dark:bg-blue-900 bg-blue-700 p-2 rounded-lg text-white" id="sort-select" bind:value={sort} on:change={async () => await searchQuery(search)}>
-				<option value="wikiPageLength">Popularity</option>
-				<option value="date">Release Date</option>
-				<option value="IGN">IGN Score</option>
-			</select>
+		<div class="flex max-w-3xl mx-auto justify-center my-10 items-center space-x-10">
+			<div class="flex items-center space-x-2">
+				<label for="sort-select">Sort by</label>
+				<select class="dark:bg-blue-900 bg-blue-700 p-2 rounded-lg text-white" id="sort-select" bind:value={sort} on:change={async () => await searchQuery(search)}>
+					<option value="wikiPageLength">Popularity</option>
+					<option value="date">Release Date</option>
+					<option value="IGN">IGN Score</option>
+				</select>
+			</div>
+			<div class="flex items-center space-x-2">
+				<label for="sort-select">Order</label>
+				<select class="dark:bg-blue-900 bg-blue-700 p-2 rounded-lg text-white" id="sort-select" bind:value={order} on:change={async () => await searchQuery(search)}>
+					<option value="desc">Descending</option>
+					<option value="asc">Ascending</option>
+				</select>
+			</div>
 		</div>
 	{/if}
 </form>
