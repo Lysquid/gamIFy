@@ -1,10 +1,11 @@
 <script lang="ts">
 	import type { PageData } from './$types';
-	import { searchGameInfos, searchList, searchGamesByGenre } from '$lib/requests';
+	import { searchGameInfos, searchList, searchGamesByGenre, searchImage } from '$lib/requests';
 	import InfoPage from '$lib/components/InfoPage.svelte';
 	import { Spinner } from 'flowbite-svelte';
 	import InfoPageTableEntry from '$lib/components/InfoPageTableEntry.svelte';
 	import SmallList from '$lib/components/SmallList.svelte';
+	import CardList from '$lib/components/CardList.svelte';
 	export let data: PageData;
 </script>
 
@@ -23,12 +24,14 @@
 			<InfoPageTableEntry title="Series" value={game.series?.value}/>
 		</ul>
 
-		<div slot="content" class="grid xl:grid-cols-2 gap-x-8 gap-y-8 mt-10">
-			<SmallList title="Publishers" type="company" promise={searchList("publisher", data.slug)}/>
-			<SmallList title="Developers" type="company" promise={searchList("developer", data.slug)}/>
-			<SmallList title="Genres" type="genre" promise={searchList("genre", data.slug)}/>
-			<SmallList title="Platforms" type="platform" promise={searchList("computingPlatform", data.slug, 5)}/>
-			<SmallList title="Popular games of the same genre" type="game" promise={searchGamesByGenre(data.slug)}/>
+		<div slot="content">
+			<div class="grid xl:grid-cols-2 gap-x-8 gap-y-8 mt-10">		
+				<SmallList title="Publishers" type="company" promise={searchList("publisher", data.slug)}/>
+				<SmallList title="Developers" type="company" promise={searchList("developer", data.slug)}/>
+				<SmallList title="Genres" type="genre" promise={searchList("genre", data.slug)}/>
+				<SmallList title="Platforms" type="platform" promise={searchList("computingPlatform", data.slug, 5)}/>
+			</div>
+			<CardList title="Popular games of the same genre" type="game" promise={searchGamesByGenre(data.slug)}/>
 		</div>
 	</InfoPage>
 
