@@ -116,8 +116,8 @@
 	}
 
 	export const snapshot: Snapshot<any[]> = {
-		capture: () => [data, search, type],
-		restore: (value) => {[data, search, type] = value},
+		capture: () => [data, search, type, sort, order],
+		restore: (value) => {[data, search, type, sort, order] = value},
 	}
 </script>
 
