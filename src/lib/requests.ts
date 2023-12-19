@@ -276,7 +276,8 @@ export async function searchPlatformInfos(platform: string): Promise<any> {
                 {
                     ?uri dbp:date ?date.
                 } UNION {
-                    ?uri dbp:releasedate ?date.
+                    ?uri dbp:releasedate ?reldate.
+                    BIND(?reldate as ?date).
                 }
             }
             OPTIONAL {
