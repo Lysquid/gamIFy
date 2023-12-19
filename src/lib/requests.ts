@@ -42,110 +42,125 @@ export class AttributeFilter implements Filter {
 
 export async function searchGames(filters: Filter[], orderby: "wikiPageLength" | "date" | "IGN", dir: "asc" | "desc", length: number, offset: number): Promise<any> {
     let filter_lines = filters.map(filter => filter.getFilterLine()).join("");
-
-    return executeQuery(`
-        SELECT DISTINCT
-            ?game as ?uri
-            ?label
-            ?image 
-            MIN(?releaseDate) as ?date
-            GROUP_CONCAT(distinct ?publisher; separator = ", ") as ?publishers
-            SUM(?IGN)/COUNT(?IGN) as ?IGN
-        WHERE {
-            ?game a dbo:VideoGame.
-            OPTIONAL {?game dbo:thumbnail ?image.}
-            OPTIONAL {?game dbo:publisher ?publisherUri.}
-            ?publisherUri rdfs:label ?publisher.
-            FILTER(lang(?publisher) = "en").
-            OPTIONAL {?game dbo:releaseDate ?trueDate.}
-            BIND(coalesce(?trueDate, 0) as ?releaseDate).
-            ?game dbo:wikiPageLength ?wikiPageLength.
-            ?game rdfs:label ?label.
-            FILTER(lang(?label) = "en").
-            OPTIONAL {
-                ?game rdfs:comment ?description.
-                FILTER(lang(?description) = "en").
-                FILTER(contains(?description, "game")).
-            }
-            ${filter_lines}
-            OPTIONAL {
-                {
-                    ?game dbp:ign ?IGN.
-                    FILTER(?IGN<=10).
+    try {
+        return await executeQuery(`
+            SELECT DISTINCT
+                ?game as ?uri
+                ?label
+                ?image 
+                MIN(?releaseDate) as ?date
+                GROUP_CONCAT(distinct ?publisher; separator = ", ") as ?publishers
+                SUM(?IGN)/COUNT(?IGN) as ?IGN
+            WHERE {
+                ?game a dbo:VideoGame.
+                OPTIONAL {?game dbo:thumbnail ?image.}
+                OPTIONAL {?game dbo:publisher ?publisherUri.
+                ?publisherUri rdfs:label ?publisher.
+                FILTER(lang(?publisher) = "en").}
+                OPTIONAL {?game dbo:releaseDate ?trueDate.}
+                BIND(coalesce(?trueDate, 0) as ?releaseDate).
+                ?game dbo:wikiPageLength ?wikiPageLength.
+                ?game rdfs:label ?label.
+                FILTER(lang(?label) = "en").
+                OPTIONAL {
+                    ?game rdfs:comment ?description.
+                    FILTER(lang(?description) = "en").
+                    FILTER(contains(?description, "game")).
                 }
-                UNION
-                {
-                    ?game dbp:ign ?hundred.
-                    FILTER(?hundred>10).
-                    FILTER(?hundred<=100). 
-                    BIND((?hundred/10.0) AS ?IGN).
+                ${filter_lines}
+                OPTIONAL {
+                    {
+                        ?game dbp:ign ?IGN.
+                        FILTER(?IGN<=10).
+                    }
+                    UNION
+                    {
+                        ?game dbp:ign ?hundred.
+                        FILTER(?hundred>10).
+                        FILTER(?hundred<=100). 
+                        BIND((?hundred/10.0) AS ?IGN).
+                    }
                 }
             }
-        }
-        GROUP BY ?game ?label ?image ?wikiPageLength
-        ORDER BY ${dir}(?${orderby})
-        LIMIT ${length}
-        OFFSET ${offset}
-    `);
+            GROUP BY ?game ?label ?image ?wikiPageLength
+            ORDER BY ${dir}(?${orderby})
+            LIMIT ${length}
+            OFFSET ${offset}
+        `);
+    } catch {
+        return []
+    }
 }
 
 export async function searchPublishers(filters: Filter[], length: number, offset: number): Promise<any> {
     let filter_lines = filters.map(filter => filter.getFilterLine()).join("");
 
-    return executeQuery(`
-        SELECT 
-            ?publisher as ?uri 
-            ?label
-            ?image 
-            count(?published) as ?nbPublished
-        WHERE {
-            ?publisher a dbo:Company.
-            OPTIONAL{?publisher dbo:thumbnail ?image.}
-            ?publisher rdfs:label ?label.
-            FILTER(lang(?label) = "en").
-            ${filter_lines}
-            ?published dbo:publisher ?publisher.
-            ?published a dbo:VideoGame.
-        }
-        ORDER BY DESC (?nbPublished)
-        LIMIT ${length}
-        OFFSET ${offset}
-    `);
+    try {
+        return await executeQuery(`
+            SELECT 
+                ?publisher as ?uri 
+                ?label
+                ?image 
+                count(?published) as ?nbPublished
+            WHERE {
+                ?publisher a dbo:Company.
+                OPTIONAL{?publisher dbo:thumbnail ?image.}
+                ?publisher rdfs:label ?label.
+                FILTER(lang(?label) = "en").
+                ${filter_lines}
+                ?published dbo:publisher ?publisher.
+                ?published a dbo:VideoGame.
+            }
+            ORDER BY DESC (?nbPublished)
+            LIMIT ${length}
+            OFFSET ${offset}
+        `);
+    } catch {
+        return [];
+    }
 }
 
 export async function searchGameSuggestions(search: string): Promise<any> {
-    return executeQuery(`
-        SELECT DISTINCT
-            ?label
-        WHERE {
-            ?game a dbo:VideoGame.
-            ?game rdfs:label ?label.
-            ?game dbo:wikiPageLength ?wikiPageLength.
-            FILTER(lang(?label) = "en").
-            FILTER(strstarts(lcase(?label), lcase("${search}")))
-        }
-        GROUP BY ?game ?label ?wikiPageLength
-        ORDER BY DESC(?wikiPageLength)
-        LIMIT 5
-    `);
+    try {
+        return await executeQuery(`
+            SELECT DISTINCT
+                ?label
+            WHERE {
+                ?game a dbo:VideoGame.
+                ?game rdfs:label ?label.
+                ?game dbo:wikiPageLength ?wikiPageLength.
+                FILTER(lang(?label) = "en").
+                FILTER(strstarts(lcase(?label), lcase("${search}")))
+            }
+            GROUP BY ?game ?label ?wikiPageLength
+            ORDER BY DESC(?wikiPageLength)
+            LIMIT 5
+        `);
+    } catch {
+        return [];
+    }
 }
 
 export async function searchPublisherSuggestions(search: string): Promise<any> {
-    return executeQuery(`
-        SELECT 
-            ?label 
-            (count(?published) as ?nbPublished) 
-        WHERE {
-            ?publisher a dbo:Company.
-            ?publisher rdfs:label ?label.
-            FILTER(lang(?label) = "en").
-            ?published dbo:publisher ?publisher.
-            ?published a dbo:VideoGame.
-            FILTER(strstarts(lcase(?label), lcase("${search}")))
-        }
-        ORDER BY DESC (?nbPublished)
-        LIMIT 5
-    `);
+    try {
+        return await executeQuery(`
+            SELECT 
+                ?label 
+                (count(?published) as ?nbPublished) 
+            WHERE {
+                ?publisher a dbo:Company.
+                ?publisher rdfs:label ?label.
+                FILTER(lang(?label) = "en").
+                ?published dbo:publisher ?publisher.
+                ?published a dbo:VideoGame.
+                FILTER(strstarts(lcase(?label), lcase("${search}")))
+            }
+            ORDER BY DESC (?nbPublished)
+            LIMIT 5
+        `);
+    } catch {
+        return [];
+    }
 }
 
 export async function searchGamesByGenre(source: string): Promise<any> {
