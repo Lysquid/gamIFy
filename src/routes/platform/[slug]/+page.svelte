@@ -12,7 +12,7 @@
 	<Spinner color="blue"></Spinner>
 {:then platform}
 
-	<InfoPage title={platform.label?.value || ""} description={platform.description?.value || ""} image={platform.image?.value || ""}>
+	<InfoPage title={platform.label?.value || ""} description={platform.description?.value || ""} image={platform.image?.value}>
 		
 		<ul slot="info-entry">
 			<InfoPageTableEntry title="Release date" value={platform.date?.value}/>

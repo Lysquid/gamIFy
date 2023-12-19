@@ -14,7 +14,7 @@
 	<Spinner color="blue"></Spinner>
 {:then game}
 
-	<InfoPage title={game.label.value} description={game.description?.value || ""} image={game.image?.value || ""}>
+	<InfoPage title={game.label.value} description={game.description?.value || ""} image={game.image?.value}>
 		
 		<ul slot="info-entry">
 			<InfoPageTableEntry title="Date" value={game.date?.value}/>

@@ -12,7 +12,7 @@
 	<Spinner color="blue"></Spinner>
 {:then genre}
 
-	<InfoPage title={genre.label.value} description={genre.description?.value || ""} image={genre.image?.value || ""}>
+	<InfoPage title={genre.label.value} description={genre.description?.value || ""} image={genre.image?.value}>
 		
 		<div slot="info-entry">
 			<InfoPageTableEntry title="Game count" value={genre.gamecount?.value}/>
