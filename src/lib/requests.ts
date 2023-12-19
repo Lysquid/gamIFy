@@ -330,7 +330,7 @@ export async function searchPublisherInfo(publisher: string): Promise<any> {
             }
             OPTIONAL {?publisher dbo:foundingDate ?foundingDate.}
             OPTIONAL {
-                ?publisher dbp:founder ?founder.
+                ?publisher dbo:foundedBy ?founder.
                 ?founder rdfs:label ?founderName
             }
             ?game dbo:publisher ?publisher.
