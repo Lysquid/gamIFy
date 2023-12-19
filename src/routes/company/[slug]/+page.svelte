@@ -12,7 +12,7 @@
 	<Spinner color="blue"></Spinner>
 {:then publisher}
 
-	<InfoPage title={publisher.label.value} description={publisher.description?.value} image={publisher?.image.value}>
+	<InfoPage title={publisher.label.value} description={publisher.description?.value || ""} image={publisher?.image.value || ""}>
 
 		<div slot="info-entry"> 
 			<InfoPageTableEntry title="Founding date" value={publisher.foundingDate?.value}/>	
