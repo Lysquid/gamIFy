@@ -87,8 +87,11 @@ export async function searchGames(filters: Filter[], orderby: "wikiPageLength" |
             LIMIT ${length}
             OFFSET ${offset}
         `);
-    } catch {
-        return []
+    } catch (error: any) {
+        if(error.message == "Not found") {
+            return [];
+        }
+        throw error;
     }
 }
 
@@ -115,8 +118,11 @@ export async function searchPublishers(filters: Filter[], length: number, offset
             LIMIT ${length}
             OFFSET ${offset}
         `);
-    } catch {
-        return [];
+    } catch (error: any) {
+        if(error.message == "Not found") {
+            return [];
+        }
+        throw error;
     }
 }
 
@@ -136,8 +142,11 @@ export async function searchGameSuggestions(search: string): Promise<any> {
             ORDER BY DESC(?wikiPageLength)
             LIMIT 5
         `);
-    } catch {
-        return [];
+    } catch (error: any) {
+        if(error.message == "Not found") {
+            return [];
+        }
+        throw error;
     }
 }
 
@@ -158,8 +167,11 @@ export async function searchPublisherSuggestions(search: string): Promise<any> {
             ORDER BY DESC (?nbPublished)
             LIMIT 5
         `);
-    } catch {
-        return [];
+    } catch (error: any) {
+        if(error.message == "Not found") {
+            return [];
+        }
+        throw error;
     }
 }
 

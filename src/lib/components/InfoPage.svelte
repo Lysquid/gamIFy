@@ -4,13 +4,7 @@
 
 	export let title: string;
 	export let description: string;
-	export let image: string|undefined;
-	
-	// onMount(async () => {
- //        if (image) {
- //            image = await searchImage(image);
- //        }
-	// });
+	export let image: string|undefined;	
 </script>
 
 <div class="w-full lg:w-2/3 m-auto flex flex-row justify-between space-x-10">
