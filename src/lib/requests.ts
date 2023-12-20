@@ -362,6 +362,7 @@ export async function searchPublisherInfo(publisher: string): Promise<any> {
             OPTIONAL {
                 ?publisher dbo:foundedBy ?founder.
                 ?founder rdfs:label ?founderName
+                FILTER(lang(?founderName) = "en").
             }
             ?game dbo:publisher ?publisher.
             ?game a dbo:VideoGame.
