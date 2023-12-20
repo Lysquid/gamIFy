@@ -29,7 +29,7 @@
 				<SmallList title="Publishers" type="company" promise={searchList("publisher", data.slug)}/>
 				<SmallList title="Developers" type="company" promise={searchList("developer", data.slug)}/>
 				<SmallList title="Genres" type="genre" promise={searchList("genre", data.slug)}/>
-				<SmallList title="Platforms" type="platform" promise={searchList("computingPlatform", data.slug, 0)}/>
+				<SmallList title="Platforms" type="platform" promise={searchList("computingPlatform", data.slug, 5)}/>
 			</div>
 			<CardList title="Popular games of the same genre" type="game" promise={searchGamesByGenre(data.slug)}/>
 		</div>
