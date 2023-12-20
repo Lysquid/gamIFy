@@ -190,7 +190,8 @@ export async function searchGamesByGenre(source: string): Promise<any> {
             FILTER(lang(?label) = "en").
             ?game dbo:wikiPageLength ?wikiPageLength.
             ?game dbo:genre ?genre.
-            FILTER(dbr:${source} != ?game).
+
+            FILTER(dbr:${source.replaceAll("'","\\'").replaceAll("(","\\(").replaceAll(")","\\)")} != ?game).
         }
         GROUP BY ?game ?label ?image ?wikiPageLength
         ORDER BY DESC (?wikiPageLength)
