@@ -14,4 +14,7 @@ WORKDIR /app
 COPY --from=builder --chown=node:node /app/build ./build
 COPY --from=builder --chown=node:node /app/node_modules ./node_modules
 COPY --chown=node:node package.json .
+ARG HOST=127.0.0.1
+ARG PORT=5050
+ARG ORIGIN=http://127.0.0.1:5050
 CMD ["node","build"]
