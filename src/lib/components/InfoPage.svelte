@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { searchImage } from "$lib/requests";
-	import { onMount } from "svelte";
 
 	export let title: string;
 	export let description: string;

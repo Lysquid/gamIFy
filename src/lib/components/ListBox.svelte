@@ -11,7 +11,6 @@
 <script lang="ts">
 
     import { searchImage } from '$lib/requests';
-    import { onMount } from 'svelte';
 
     export var title:string;
     export var description:string|undefined = undefined;
