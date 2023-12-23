@@ -2,12 +2,10 @@ version: "3.9"
 
 services:
   sveltekit:
-    container_name: sveltekit
     build: .
     restart: always
     ports:
       - 5050:5050
     environment:
-      HOST: "http://gamify.blazannome.ynh.fr"
       PORT: 5050
-      ORIGIN: "http://gamify.blazanome.ynh.fr"
+      ORIGIN: "http://localhost:5050"

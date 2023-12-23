@@ -8,7 +8,7 @@ COPY . .
 RUN npm run build
 RUN npm ci --omit=dev
 
-FROM node:16.19.0-alpine3.16
+FROM node:21.4.0-alpine3.19
 USER node:node
 WORKDIR /app
 COPY --from=builder --chown=node:node /app/build ./build
