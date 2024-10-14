@@ -1,20 +1,26 @@
 # GamIFy
 
-Moteur de recherche de jeux vidéos, utilisant la base de connaissance de web sémantique [DBpedia](https://www.dbpedia.org/).
+A video game wiki using [DBpedia](https://www.dbpedia.org/) data, an open data graph database. It was made by 7 people, for a class on [semantic web](https://en.wikipedia.org/wiki/Semantic_Web). It uses [Svelte](https://svelte.dev/), a front-end framework.
 
-Le site est disponible à l'adresse suivante : [https://gamify.blazanome.ynh.fr](https://gamify.blazanome.ynh.fr)
+## Pages
 
-## Lancer le site
+### Search
 
-- Installer [Node.js](https://nodejs.org/en/download)
-- Se déplacer à la source du projet
+![search page](img/search.png)
+
+### Game page
+
+![game page](img/game.png)
+
+### Company page
+
+![company page](img/company.png)
+
+## How to run
+
+- Install [Node.js](https://nodejs.org/en/download) (tested with version 20)
 - `npm install`
 - `npm run dev`
-- Un message apparaît avec l'adresse locale pour accéder au site
+- A message appears with the localhost url
 
-## Avec Docker
-
-- Installer Docker
-- Checkout sur la branche `release`
-- `docker compose up`
-- Le site est disponible à l'adresse [http://localhost:5050](http://localhost:5050)
+A docker image for deployment is also available.
